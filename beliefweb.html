@@ -2,14 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>My Belief Web</title>
-
-  <!-- D3.js from a CDN -->
+  <title>My Belief Web (Zoomable)</title>
+  <!-- D3.js -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
-  
   <style>
     body {
-      margin: 0;
+      margin: 0; 
       padding: 0;
       font-family: sans-serif;
       background-color: #f9f9f9;
@@ -21,14 +19,14 @@
     }
     #chart {
       width: 100%;
-      height: 700px; /* Adjust height as desired */
-      margin: 0 auto; /* Center the chart */
+      height: 800px; /* Adjust as needed */
+      margin: 0 auto; /* Center the container */
       background: #fff;
       border: 1px solid #ccc;
     }
     text {
       font-size: 0.85rem;
-      pointer-events: none; 
+      pointer-events: none;
       fill: #333;
     }
     .core {
@@ -47,28 +45,22 @@
     }
   </style>
 </head>
-
 <body>
   <h1>My Belief Web</h1>
   <p>
-    Welcome! This interactive diagram represents my core and sub-beliefs.
+    Welcome! This interactive, zoomable diagram represents my core and sub-beliefs.
     <br />
-    <strong>Blue circles</strong> = Core Beliefs &nbsp;|&nbsp; <strong>Orange circles</strong> = Sub-Beliefs
+    <strong>Blue circles</strong> = Core Beliefs, <strong>Orange circles</strong> = Sub-Beliefs.
     <br />
-    Click and drag any circle to explore the web.
+    <strong>Tips:</strong> Scroll/pinch to zoom, drag the background to pan, and drag circles to rearrange.
   </p>
-
+  
   <div id="chart"></div>
 
   <script>
     // ------------------------------------------------------------------
-    // 1) DEFINE NODES (CORE BELIEFS & SUB-BELIEFS) AND LINKS
+    // 1) DEFINE THE DATA: NODES AND LINKS
     // ------------------------------------------------------------------
-
-    // "group: 'core'" => large blue circles
-    // "group: 'sub'"  => smaller orange circles
-    // Label them exactly as you want them to appear in the diagram
-
     const nodes = [
       // Core Nodes
       { id: "Core1",  name: "(1) Universal Consciousness",         group: "core" },
@@ -79,14 +71,14 @@
       { id: "Core6",  name: "(6) Universal Laws & Energy",          group: "core" },
       { id: "Core7",  name: "(7) Knowledge vs. Wisdom",             group: "core" },
 
-      // Sub-Beliefs for Core1
+      // Sub-beliefs for Core1
       { id: "1.1", name: "We Are Spiritual Beings Having a Human Experience", group: "sub" },
       { id: "1.2", name: "Death Is Not Truly an End",                         group: "sub" },
       { id: "1.3", name: "There Is a Divine Order Amidst Chaos",              group: "sub" },
       { id: "1.4", name: "Prayer or Intention-Setting Opens the Heart",       group: "sub" },
       { id: "1.5", name: "Stillness Reveals Inner Truth",                     group: "sub" },
 
-      // Sub-Beliefs for Core2
+      // Sub-beliefs for Core2
       { id: "2.1", name: "Authentic Service Reflects Oneness",                group: "sub" },
       { id: "2.2", name: "Self-Forgiveness Is Key",                           group: "sub" },
       { id: "2.3", name: "Nothing External Can Truly Complete You",           group: "sub" },
@@ -94,7 +86,7 @@
       { id: "2.5", name: "Everyone's Value as a Human Is EQUAL",              group: "sub" },
       { id: "2.6", name: "You Don't Have to Earn What's Already Yours",       group: "sub" },
 
-      // Sub-Beliefs for Core3
+      // Sub-beliefs for Core3
       { id: "3.1", name: "An Open Heart Is the Natural State",                group: "sub" },
       { id: "3.2", name: "Emotions Are Energetic Invitations",                group: "sub" },
       { id: "3.3", name: "The Human Mind Is a Tool, Not the Master",          group: "sub" },
@@ -103,7 +95,7 @@
       { id: "3.6", name: "Good/Bad Are Perspectives, Not Absolutes",          group: "sub" },
       { id: "3.7", name: "Reality Is Not Binary; Our Minds Impose Categories",group: "sub" },
 
-      // Sub-Beliefs for Core4
+      // Sub-beliefs for Core4
       { id: "4.1", name: "Acceptance Is Not Passivity",                       group: "sub" },
       { id: "4.2", name: "Higher Frequencies Expand Possibility",             group: "sub" },
       { id: "4.3", name: "Gratitude Is a Gateway to Love & Peace",            group: "sub" },
@@ -111,28 +103,28 @@
       { id: "4.5", name: "Adversity Is a Portal to Awakening",                group: "sub" },
       { id: "4.6", name: "You Don't Need to Push Through Fear—Stop Identifying with Its Source", group: "sub" },
 
-      // Sub-Beliefs for Core5
+      // Sub-beliefs for Core5
       { id: "5.1", name: "The Kingdom of God/Enlightenment Is Within",        group: "sub" },
       { id: "5.2", name: "Nature Is a Gateway to the Divine",                 group: "sub" },
       { id: "5.3", name: "God/The Universe Works Through My Actions, Not in Place of Them", group: "sub" },
 
-      // Sub-Beliefs for Core6
+      // Sub-beliefs for Core6
       { id: "6.1", name: "We Co-Create Reality with Consciousness",           group: "sub" },
       { id: "6.2", name: "Focus on the 'What'; Universe Takes Care of the 'How'", group: "sub" },
       { id: "6.3", name: "Becoming the Person Who Has X Is the True Way",     group: "sub" },
       { id: "6.4", name: "The Universe Is Constantly Offering Doors",         group: "sub" },
       { id: "6.5", name: "Manifestation Speed Reflects Certainty",            group: "sub" },
       { id: "6.6", name: "Internal Contradiction Is the Biggest Delay",       group: "sub" },
-      { id: "6.7", name: "Speak and Act from Already Having It",             group: "sub" },
+      { id: "6.7", name: "Speak & Act from Already Having It",               group: "sub" },
       { id: "6.8", name: "Every Intention Has an Energetic Charge",           group: "sub" },
       { id: "6.9", name: "Faith, Not Force, Accelerates Desire",              group: "sub" },
 
-      // Sub-Beliefs for Core7
+      // Sub-beliefs for Core7
       { id: "7.1", name: "Presence Is the Ultimate Practice",                 group: "sub" },
       { id: "7.2", name: "Stillness Reveals Inner Truth",                     group: "sub" },
     ];
 
-    // Now define links: each sub-belief connects back to its Core node
+    // Link each sub-belief to its parent core node
     const links = [
       // Core1
       { source: "1.1", target: "Core1" },
@@ -182,16 +174,35 @@
     ];
 
     // ------------------------------------------------------------------
-    // 2) CREATE THE SVG & SET FORCE SIMULATION
+    // 2) CREATE THE SVG & MAIN 'G' FOR ZOOM/PAN
     // ------------------------------------------------------------------
 
     const width = document.getElementById("chart").clientWidth;
     const height = document.getElementById("chart").clientHeight;
 
+    // Create the SVG
     const svg = d3.select("#chart")
       .append("svg")
       .attr("width", width)
       .attr("height", height);
+
+    // Create a group to hold all chart elements (links, nodes, labels)
+    const svgGroup = svg.append("g");
+
+    // Define a zoom behavior and attach it to the SVG
+    const zoom = d3.zoom()
+      .scaleExtent([0.3, 3])       // how far users can zoom out and in
+      .on("zoom", (event) => {
+        svgGroup.attr("transform", event.transform);
+      });
+
+    svg.call(zoom)
+       .call(zoom.transform, d3.zoomIdentity.scale(0.9)); 
+    // 0.9 is a slight initial zoom-out so more of the web fits on screen
+
+    // ------------------------------------------------------------------
+    // 3) SET UP FORCE SIMULATION
+    // ------------------------------------------------------------------
 
     const simulation = d3.forceSimulation(nodes)
       .force("link", d3.forceLink(links).id(d => d.id).distance(130))
@@ -200,20 +211,20 @@
       .force("collide", d3.forceCollide(40));
 
     // ------------------------------------------------------------------
-    // 3) DRAW LINKS (LINES)
+    // 4) RENDER LINKS (LINES) INSIDE svgGroup
     // ------------------------------------------------------------------
 
-    const link = svg.selectAll("line")
+    const link = svgGroup.selectAll("line")
       .data(links)
       .enter()
       .append("line")
       .attr("stroke-width", 1);
 
     // ------------------------------------------------------------------
-    // 4) DRAW NODES (CIRCLES)
+    // 5) RENDER NODES (CIRCLES)
     // ------------------------------------------------------------------
 
-    const node = svg.selectAll("circle")
+    const node = svgGroup.selectAll("circle")
       .data(nodes)
       .enter()
       .append("circle")
@@ -226,10 +237,10 @@
       );
 
     // ------------------------------------------------------------------
-    // 5) DRAW LABELS (TEXT)
+    // 6) RENDER LABELS (TEXT)
     // ------------------------------------------------------------------
 
-    const label = svg.selectAll("text")
+    const label = svgGroup.selectAll("text")
       .data(nodes)
       .enter()
       .append("text")
@@ -238,7 +249,7 @@
       .attr("y", 3);
 
     // ------------------------------------------------------------------
-    // 6) SIMULATION TICK FUNCTION
+    // 7) TICK FUNCTION (UPDATES POSITIONS EACH FRAME)
     // ------------------------------------------------------------------
 
     simulation.on("tick", () => {
@@ -258,22 +269,26 @@
     });
 
     // ------------------------------------------------------------------
-    // 7) DRAG FUNCTIONS
+    // 8) DRAG FUNCTIONS
     // ------------------------------------------------------------------
 
     function dragstarted(event, d) {
       if (!event.active) simulation.alphaTarget(0.3).restart();
-      d.fx = d.x; d.fy = d.y;
+      d.fx = d.x;
+      d.fy = d.y;
     }
 
     function dragged(event, d) {
-      d.fx = event.x; d.fy = event.y;
+      d.fx = event.x;
+      d.fy = event.y;
     }
 
     function dragended(event, d) {
       if (!event.active) simulation.alphaTarget(0);
-      d.fx = null; d.fy = null;
+      d.fx = null;
+      d.fy = null;
     }
+
   </script>
 </body>
 </html>
