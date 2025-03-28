@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>My Belief Web (Zoomable)</title>
+  <title>My Belief Web (Structured)</title>
   <!-- D3.js -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
@@ -26,8 +26,15 @@
     }
     text {
       font-size: 0.85rem;
-      pointer-events: none;
       fill: #333;
+      pointer-events: none; /* let user drag circles under text */
+    }
+    /* Make sub-belief text bold */
+    .subLabel {
+      font-weight: bold;
+    }
+    .coreLabel {
+      font-weight: normal;
     }
     .core {
       fill: steelblue;
@@ -46,21 +53,19 @@
   </style>
 </head>
 <body>
-  <h1>My Belief Web</h1>
+  <h1>My Belief Web (Structured)</h1>
   <p>
-    Welcome! This interactive, zoomable diagram represents my core and sub-beliefs.
-    <br />
-    <strong>Blue circles</strong> = Core Beliefs, <strong>Orange circles</strong> = Sub-Beliefs.
-    <br />
-    <strong>Tips:</strong> Scroll/pinch to zoom, drag the background to pan, and drag circles to rearrange.
+    A more stable layout: core beliefs are arranged in a circle at the center,<br/>
+    and sub-beliefs orbit around them. Scroll/pinch to zoom, drag the background to pan, <br/>
+    or drag any circle to reposition.
   </p>
   
   <div id="chart"></div>
 
   <script>
-    // ------------------------------------------------------------------
-    // 1) DEFINE THE DATA: NODES AND LINKS
-    // ------------------------------------------------------------------
+    // ------------------------------------------------------
+    // 1) DEFINE THE DATA (NODES & LINKS)
+    // ------------------------------------------------------
     const nodes = [
       // Core Nodes
       { id: "Core1",  name: "(1) Universal Consciousness",         group: "core" },
@@ -124,7 +129,7 @@
       { id: "7.2", name: "Stillness Reveals Inner Truth",                     group: "sub" },
     ];
 
-    // Link each sub-belief to its parent core node
+    // Link each sub-belief to its parent
     const links = [
       // Core1
       { source: "1.1", target: "Core1" },
@@ -173,57 +178,77 @@
       { source: "7.2", target: "Core7" },
     ];
 
-    // ------------------------------------------------------------------
-    // 2) CREATE THE SVG & MAIN 'G' FOR ZOOM/PAN
-    // ------------------------------------------------------------------
-
+    // ------------------------------------------------------
+    // 2) CREATE THE SVG + ZOOM/PAN BEHAVIOR
+    // ------------------------------------------------------
     const width = document.getElementById("chart").clientWidth;
     const height = document.getElementById("chart").clientHeight;
 
-    // Create the SVG
     const svg = d3.select("#chart")
       .append("svg")
       .attr("width", width)
       .attr("height", height);
 
-    // Create a group to hold all chart elements (links, nodes, labels)
     const svgGroup = svg.append("g");
 
-    // Define a zoom behavior and attach it to the SVG
+    // Zoom behavior
     const zoom = d3.zoom()
-      .scaleExtent([0.3, 3])       // how far users can zoom out and in
+      .scaleExtent([0.3, 3]) // min & max zoom
       .on("zoom", (event) => {
         svgGroup.attr("transform", event.transform);
       });
 
     svg.call(zoom)
-       .call(zoom.transform, d3.zoomIdentity.scale(0.9)); 
-    // 0.9 is a slight initial zoom-out so more of the web fits on screen
+       .call(zoom.transform, d3.zoomIdentity.scale(0.8)); // slightly zoomed-out start
 
-    // ------------------------------------------------------------------
-    // 3) SET UP FORCE SIMULATION
-    // ------------------------------------------------------------------
+    // ------------------------------------------------------
+    // 3) FIX CORE NODES IN A CIRCLE AROUND CENTER
+    // ------------------------------------------------------
 
+    // We'll place the 7 cores on a circle of radius ~120 around the page center
+    // That way, they're stable and sub-beliefs orbit around them.
+    function positionCoreNodes() {
+      let centerX = width / 2;
+      let centerY = height / 2;
+      let radius = 120; // distance from center
+      let angleStep = (2 * Math.PI) / 7; // for 7 core nodes
+      let i = 0;
+
+      nodes.forEach(n => {
+        if (n.group === "core") {
+          let angle = i * angleStep;
+          n.fx = centerX + radius * Math.cos(angle);
+          n.fy = centerY + radius * Math.sin(angle);
+          i++;
+        }
+      });
+    }
+    positionCoreNodes();
+
+    // ------------------------------------------------------
+    // 4) CREATE THE FORCE SIMULATION
+    // ------------------------------------------------------
     const simulation = d3.forceSimulation(nodes)
-      .force("link", d3.forceLink(links).id(d => d.id).distance(130))
-      .force("charge", d3.forceManyBody().strength(-280))
+      .force("link", d3.forceLink(links).id(d => d.id).distance(120))
+      // Lower negative to reduce "explosiveness" around the center
+      .force("charge", d3.forceManyBody().strength(-160))
+      // Center force helps sub-beliefs not drift too far from center
       .force("center", d3.forceCenter(width / 2, height / 2))
+      // Slight collision so nodes don't overlap too much
       .force("collide", d3.forceCollide(40));
 
-    // ------------------------------------------------------------------
-    // 4) RENDER LINKS (LINES) INSIDE svgGroup
-    // ------------------------------------------------------------------
-
+    // ------------------------------------------------------
+    // 5) DRAW LINKS (LINES)
+    // ------------------------------------------------------
     const link = svgGroup.selectAll("line")
       .data(links)
       .enter()
       .append("line")
       .attr("stroke-width", 1);
 
-    // ------------------------------------------------------------------
-    // 5) RENDER NODES (CIRCLES)
-    // ------------------------------------------------------------------
-
+    // ------------------------------------------------------
+    // 6) DRAW NODES (CIRCLES)
+    // ------------------------------------------------------
     const node = svgGroup.selectAll("circle")
       .data(nodes)
       .enter()
@@ -236,22 +261,21 @@
         .on("end", dragended)
       );
 
-    // ------------------------------------------------------------------
-    // 6) RENDER LABELS (TEXT)
-    // ------------------------------------------------------------------
-
+    // ------------------------------------------------------
+    // 7) DRAW LABELS (TEXT)
+    // ------------------------------------------------------
     const label = svgGroup.selectAll("text")
       .data(nodes)
       .enter()
       .append("text")
       .text(d => d.name)
       .attr("x", 8)
-      .attr("y", 3);
+      .attr("y", 3)
+      .attr("class", d => d.group === "sub" ? "subLabel" : "coreLabel");
 
-    // ------------------------------------------------------------------
-    // 7) TICK FUNCTION (UPDATES POSITIONS EACH FRAME)
-    // ------------------------------------------------------------------
-
+    // ------------------------------------------------------
+    // 8) SIMULATION TICK
+    // ------------------------------------------------------
     simulation.on("tick", () => {
       link
         .attr("x1", d => d.source.x)
@@ -268,27 +292,27 @@
         .attr("y", d => d.y + 3);
     });
 
-    // ------------------------------------------------------------------
-    // 8) DRAG FUNCTIONS
-    // ------------------------------------------------------------------
-
+    // ------------------------------------------------------
+    // 9) DRAG FUNCTIONS
+    // ------------------------------------------------------
     function dragstarted(event, d) {
       if (!event.active) simulation.alphaTarget(0.3).restart();
       d.fx = d.x;
       d.fy = d.y;
     }
-
     function dragged(event, d) {
       d.fx = event.x;
       d.fy = event.y;
     }
-
     function dragended(event, d) {
       if (!event.active) simulation.alphaTarget(0);
-      d.fx = null;
-      d.fy = null;
+      // If it's a core node, we keep it fixed. 
+      // If you want to allow core nodes to move once dragged, remove the next two lines:
+      if (d.group !== "core") {
+        d.fx = null;
+        d.fy = null;
+      }
     }
-
   </script>
 </body>
 </html>
