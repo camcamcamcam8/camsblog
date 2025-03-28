@@ -1,276 +1,308 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Camden's Belief Web (Static Layout)</title>
+  <meta charset="UTF-8">
+  <title>My Beliefs (Static, Dark Layout)</title>
   <style>
-    body {
+    /* Basic reset */
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+    /* Dark background */
+    body {
+      background: #121212;
+      color: #f0f0f0;
       font-family: sans-serif;
-      background: #f9f9f9;
+      min-height: 100vh;
+      overflow-x: auto; /* let us scroll horizontally if needed */
+      padding: 2rem;
+      position: relative; /* so we can position things absolutely */
     }
-    h1, p {
+    h1 {
       text-align: center;
-      margin: 20px auto;
-      max-width: 800px;
+      margin-bottom: 1rem;
     }
-    #chart {
-      /* Large fixed size so it doesn't cut off. Adjust as needed. */
-      width: 1500px; 
-      height: 1500px;
+
+    /* Container for the entire arrangement */
+    .beliefs-container {
+      width: 2000px; /* big enough for everything; adjust as needed */
+      height: 1200px; /* likewise, can tweak */
       margin: 0 auto;
-      background: #fff;
-      border: 1px solid #ccc;
-      position: relative; /* so we can absolutely position elements inside */
-      overflow: auto; /* show scrollbars if elements exceed this container */
+      position: relative;
+      background: #1e1e1e;
+      border: 2px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
     }
 
-    /* Core Belief Styles */
-    .coreBox {
-      position: absolute; /* We'll manually position each item */
-      width: 140px;
-      height: 60px;
+    /* Core Bubble styles */
+    .core-bubble {
+      position: absolute;
+      width: 200px;
+      padding: 10px;
+      background: #2980b9; /* nice blue */
       border-radius: 12px;
-      background: steelblue;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       text-align: center;
       font-weight: bold;
-      padding: 10px;
+      color: #fff;
     }
 
-    /* Sub-Belief Circle + Label wrapper */
-    .subWrapper {
-      position: absolute; 
+    /* Sub-belief column wrapper */
+    .sub-column {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    /* Each sub-belief item (text + circle) */
+    .sub-item {
+      margin: 6px 0;
       display: flex;
       align-items: center;
+      position: relative;
     }
-    .subCircle {
-      width: 14px;
-      height: 14px;
-      border-radius: 7px;
+    .sub-circle {
+      width: 10px;
+      height: 10px;
       background: orange;
-      margin-right: 6px; /* space between circle and label text */
+      border-radius: 5px;
+      margin-right: 6px;
+      flex-shrink: 0;
     }
-    .subLabel {
-      font-size: 0.85rem;
-      font-weight: bold;
-      color: #333;
-      max-width: 200px; /* wrap text if too long */
-      line-height: 1.2;
+    .sub-text {
+      max-width: 240px; /* wrap text */
+      font-size: 0.9rem;
+      line-height: 1.3;
+      color: #f0f0f0;
+    }
+
+    /* Lines: We'll create them with a pseudo-element on .sub-item */
+    .sub-item::before {
+      content: "";
+      position: absolute;
+      top: 5px; /* roughly center with the circle */
+      left: -1px; /* behind the circle */
+      width: 2px;
+      background: #ccc;
+      height: 0; /* we'll set it dynamically with "transform: scaleY(...)" */
+      transform-origin: top;
+      z-index: -1;
+    }
+
+    /* We'll store custom properties with --lineStartX, --lineStartY, etc. to draw lines from the sub to the core bubble */
+    .sub-item[data-x][data-y][data-cx][data-cy]::before {
+      /* read the custom props set in JS or inline style */
+      position: absolute;
+      width: 2px; /* thickness of line */
+      background: #ccc;
+      /* We'll do a transform to rotate + scale the line from core bubble to sub circle */
+      transform-origin: top left;
     }
   </style>
 </head>
 <body>
-  <h1>Camden's Static Belief Layout</h1>
-  <p>
-    Each core belief is a labeled rectangle around the center.<br/>
-    Sub-beliefs spread out along “spokes,” with closer or farther distances.
-  </p>
+  <h1>My Beliefs - Static Layout (Dark)</h1>
 
-  <div id="chart">
-    <!-- We’ll place our “coreBox” and “subWrapper” elements by calculating X/Y in JS. -->
+  <div class="beliefs-container" id="beliefsContainer">
+    <!-- EXAMPLE: We'll place each CORE bubble absolutely. 
+         Then for sub-beliefs, we'll place them in a column and draw lines. 
+         For demonstration, let's do 7 core ideas. 
+         
+         Tweak the X/Y (left/top) positions for each core bubble, 
+         and place sub-belief columns likewise. 
+    -->
+
+    <!-- 1) Core: Universal Consciousness (EXAMPLE) -->
+    <div class="core-bubble" style="left: 200px; top: 200px;">
+      Universal Consciousness  
+    </div>
+    <!-- Sub-belief column for this core -->
+    <div class="sub-column" style="left: 450px; top: 180px;">
+      <!-- Each sub-belief is a .sub-item with a .sub-circle and .sub-text
+           We'll manually connect lines from the sub circle to the core bubble center. 
+           Suppose the center of the core bubble is about (200+100, 200+40) => (300,240). 
+           We'll do this in JS or by hand if the layout is final. 
+       -->
+      <div class="sub-item" style="margin-top: 0;"
+           data-x="460" data-y="180"   /* approximate circle center */
+           data-cx="300" data-cy="240" /* core bubble center */
+      >
+        <div class="sub-circle"></div>
+        <div class="sub-text">We Are Spiritual Beings Having a Human Experience</div>
+      </div>
+
+      <div class="sub-item"
+           data-x="460" data-y="210"
+           data-cx="300" data-cy="240"
+      >
+        <div class="sub-circle"></div>
+        <div class="sub-text">Death Is Not Truly an End</div>
+      </div>
+
+      <div class="sub-item"
+           data-x="460" data-y="240"
+           data-cx="300" data-cy="240"
+      >
+        <div class="sub-circle"></div>
+        <div class="sub-text">There Is a Divine Order Amidst Chaos</div>
+      </div>
+      <!-- ... add more sub-items as needed -->
+    </div>
+
+    <!-- 2) Core: Oneness & Interconnectedness -->
+    <div class="core-bubble" style="left: 450px; top: 500px;">
+      Oneness &amp; Interconnectedness
+    </div>
+    <!-- Sub-belief column -->
+    <div class="sub-column" style="left: 700px; top: 480px;">
+      <div class="sub-item"
+           data-x="710" data-y="480"
+           data-cx="550" data-cy="540"
+      >
+        <div class="sub-circle"></div>
+        <div class="sub-text">Authentic Service Reflects Oneness</div>
+      </div>
+      <div class="sub-item"
+           data-x="710" data-y="510"
+           data-cx="550" data-cy="540"
+      >
+        <div class="sub-circle"></div>
+        <div class="sub-text">Self-Forgiveness Is Key</div>
+      </div>
+      <!-- etc... -->
+    </div>
+
+    <!-- 3) Core: Societal Conditioning -->
+    <div class="core-bubble" style="left: 300px; top: 800px;">
+      Societal Conditioning
+    </div>
+    <div class="sub-column" style="left: 550px; top: 780px;">
+      <div class="sub-item"
+           data-x="560" data-y="780"
+           data-cx="400" data-cy="830"
+      >
+        <div class="sub-circle"></div>
+        <div class="sub-text">An Open Heart Is the Natural State</div>
+      </div>
+      <div class="sub-item"
+           data-x="560" data-y="810"
+           data-cx="400" data-cy="830"
+      >
+        <div class="sub-circle"></div>
+        <div class="sub-text">Emotions Are Energetic Invitations</div>
+      </div>
+      <!-- etc. -->
+    </div>
+
+    <!-- 4) Core: Suffering from Resistance -->
+    <div class="core-bubble" style="left: 800px; top: 200px;">
+      Suffering from Resistance
+    </div>
+    <div class="sub-column" style="left: 1050px; top: 180px;">
+      <div class="sub-item"
+           data-x="1060" data-y="180"
+           data-cx="900" data-cy="240"
+      >
+        <div class="sub-circle"></div>
+        <div class="sub-text">Acceptance Is Not Passivity</div>
+      </div>
+      <!-- etc. -->
+    </div>
+
+    <!-- 5) Core: Purpose & Greater Good -->
+    <div class="core-bubble" style="left: 900px; top: 600px;">
+      Purpose &amp; Greater Good
+    </div>
+    <div class="sub-column" style="left: 1150px; top: 580px;">
+      <div class="sub-item"
+           data-x="1160" data-y="580"
+           data-cx="1000" data-cy="630"
+      >
+        <div class="sub-circle"></div>
+        <div class="sub-text">The Kingdom of God/Enlightenment Is Within</div>
+      </div>
+      <!-- etc. -->
+    </div>
+
+    <!-- 6) Core: Universal Laws & Energy -->
+    <div class="core-bubble" style="left: 1300px; top: 200px;">
+      Universal Laws &amp; Energy
+    </div>
+    <div class="sub-column" style="left: 1550px; top: 180px;">
+      <div class="sub-item"
+           data-x="1560" data-y="180"
+           data-cx="1400" data-cy="240"
+      >
+        <div class="sub-circle"></div>
+        <div class="sub-text">We Co-Create Reality with Consciousness</div>
+      </div>
+      <!-- etc. -->
+    </div>
+
+    <!-- 7) Core: Knowledge vs. Wisdom -->
+    <div class="core-bubble" style="left: 1300px; top: 600px;">
+      Knowledge vs. Wisdom
+    </div>
+    <div class="sub-column" style="left: 1550px; top: 580px;">
+      <div class="sub-item"
+           data-x="1560" data-y="580"
+           data-cx="1400" data-cy="630"
+      >
+        <div class="sub-circle"></div>
+        <div class="sub-text">Presence Is the Ultimate Practice</div>
+      </div>
+      <!-- etc. -->
+    </div>
+
+    <!-- More cores + sub-beliefs as desired -->
   </div>
 
   <script>
-    // ------------------------------------------------------------------
-    // 1) DEFINE THE BELIEFS
-    // ------------------------------------------------------------------
+    // We’ll draw lines by computing the angle + length from the sub circle to the core bubble.
+    // Then we transform scaleY or rotate. But for simplicity, let's do a direct approach:
+    // We'll do a "drawLine" function in JS for each sub-item.
 
-    // 7 CORE BELIEFS: each has an id + label
-    const cores = [
-      { id: "Core1", label: "Universal Consciousness" },
-      { id: "Core2", label: "Oneness & Interconnectedness" },
-      { id: "Core3", label: "Societal Conditioning" },
-      { id: "Core4", label: "Suffering from Resistance" },
-      { id: "Core5", label: "Purpose & Greater Good" },
-      { id: "Core6", label: "Universal Laws & Energy" },
-      { id: "Core7", label: "Knowledge vs. Wisdom" },
-    ];
+    const subItems = document.querySelectorAll('.sub-item');
+    subItems.forEach(item => {
+      const circleX = parseFloat(item.dataset.x);
+      const circleY = parseFloat(item.dataset.y);
+      const coreX   = parseFloat(item.dataset.cx);
+      const coreY   = parseFloat(item.dataset.cy);
+      if (!circleX || !circleY || !coreX || !coreY) return;
 
-    // For each sub-belief, define:
-    // - coreId (which core it belongs to)
-    // - label
-    // - distanceIndex (how close or far along the spoke it is: 1 = close, 2 = next, etc.)
-    //   The final radius from center is baseRadius + (distanceIndex * spacing).
-    const subBeliefs = [
-      // Core1
-      { coreId: "Core1", label: "We Are Spiritual Beings Having a Human Experience", distanceIndex: 1 },
-      { coreId: "Core1", label: "Death Is Not Truly an End", distanceIndex: 2 },
-      { coreId: "Core1", label: "There Is a Divine Order Amidst Chaos", distanceIndex: 3 },
-      { coreId: "Core1", label: "Prayer/Intention-Setting Opens the Heart", distanceIndex: 4 },
-      { coreId: "Core1", label: "Stillness Reveals Inner Truth", distanceIndex: 5 },
+      const dx = coreX - circleX;
+      const dy = coreY - circleY;
+      const length = Math.sqrt(dx*dx + dy*dy);
 
-      // Core2
-      { coreId: "Core2", label: "Authentic Service Reflects Oneness", distanceIndex: 1 },
-      { coreId: "Core2", label: "Self-Forgiveness Is Key", distanceIndex: 2 },
-      { coreId: "Core2", label: "Nothing External Can Truly Complete You", distanceIndex: 3 },
-      { coreId: "Core2", label: "Everyone Always Does What They Think Is Best", distanceIndex: 4 },
-      { coreId: "Core2", label: "Everyone's Value as a Human Is EQUAL", distanceIndex: 5 },
-      { coreId: "Core2", label: "You Don't Have to Earn What's Already Yours", distanceIndex: 6 },
+      // angle in radians
+      const angle = Math.atan2(dy, dx);
 
-      // Core3
-      { coreId: "Core3", label: "An Open Heart Is the Natural State", distanceIndex: 1 },
-      { coreId: "Core3", label: "Emotions Are Energetic Invitations", distanceIndex: 2 },
-      { coreId: "Core3", label: "The Human Mind Is a Tool, Not the Master", distanceIndex: 3 },
-      { coreId: "Core3", label: "Playfulness & Joy Are Sacred", distanceIndex: 4 },
-      { coreId: "Core3", label: "Less Is More", distanceIndex: 5 },
-      { coreId: "Core3", label: "Good/Bad Are Perspectives, Not Absolutes", distanceIndex: 6 },
-      { coreId: "Core3", label: "Reality Is Not Binary; Our Minds Impose Categories", distanceIndex: 7 },
+      // item::before = that line. We can set transform to rotate(angle) and scale the height/width
+      // We'll store them in style:
+      // We'll put the origin at circleX,circleY. The top-left of .sub-item is (circleX, circleY),
+      // so we want the line to start at (0,0) in item coords, rotate, and extend length px.
 
-      // Core4
-      { coreId: "Core4", label: "Acceptance Is Not Passivity", distanceIndex: 1 },
-      { coreId: "Core4", label: "Higher Frequencies Expand Possibility", distanceIndex: 2 },
-      { coreId: "Core4", label: "Gratitude Is a Gateway to Love & Peace", distanceIndex: 3 },
-      { coreId: "Core4", label: "Feeling Is the Secret", distanceIndex: 4 },
-      { coreId: "Core4", label: "Adversity Is a Portal to Awakening", distanceIndex: 5 },
-      { coreId: "Core4", label: "You Don't Need to Push Through Fear—Stop Identifying with Its Source", distanceIndex: 6 },
+      // We set the line's top to 0, left to 0. Then rotate + scaleX or scaleY as needed.
+      // Because the line is 2px wide, we can scaleX = length, rotate(angle).
+      item.style.setProperty('--lineAngle', angle + 'rad');
+      item.style.setProperty('--lineLength', length + 'px');
 
-      // Core5
-      { coreId: "Core5", label: "The Kingdom of God/Enlightenment Is Within", distanceIndex: 1 },
-      { coreId: "Core5", label: "Nature Is a Gateway to the Divine", distanceIndex: 2 },
-      { coreId: "Core5", label: "God/The Universe Works Through My Actions, Not in Place of Them", distanceIndex: 3 },
-
-      // Core6
-      { coreId: "Core6", label: "We Co-Create Reality with Consciousness", distanceIndex: 1 },
-      { coreId: "Core6", label: "Focus on the 'What'; Universe Takes Care of the 'How'", distanceIndex: 2 },
-      { coreId: "Core6", label: "Becoming the Person Who Has X Is the True Way", distanceIndex: 3 },
-      { coreId: "Core6", label: "The Universe Is Constantly Offering Doors", distanceIndex: 4 },
-      { coreId: "Core6", label: "Manifestation Speed Reflects Certainty", distanceIndex: 5 },
-      { coreId: "Core6", label: "Internal Contradiction Is the Biggest Delay", distanceIndex: 6 },
-      { coreId: "Core6", label: "Speak & Act from Already Having It", distanceIndex: 7 },
-      { coreId: "Core6", label: "Every Intention Has an Energetic Charge", distanceIndex: 8 },
-      { coreId: "Core6", label: "Faith, Not Force, Accelerates Desire", distanceIndex: 9 },
-
-      // Core7
-      { coreId: "Core7", label: "Presence Is the Ultimate Practice", distanceIndex: 1 },
-      { coreId: "Core7", label: "Stillness Reveals Inner Truth", distanceIndex: 2 },
-    ];
-
-    // ------------------------------------------------------------------
-    // 2) LAYOUT CONSTANTS
-    // ------------------------------------------------------------------
-
-    // Chart is 1500x1500, so let's define the center:
-    const centerX = 750;
-    const centerY = 750;
-
-    // We'll place cores on a circle of radius = 200
-    const radiusCores = 200;
-
-    // For sub-beliefs, each core has an angle. We'll do 7 angles, equally spaced.
-    // angleStep = 2π / 7
-    const angleStep = (2 * Math.PI) / cores.length;
-
-    // Distances for sub-beliefs:
-    // subBelief final radius = 300 + distanceIndex * 50 (for example).
-    // You can tweak base radius or spacing.
-    const baseSubRadius = 300;
-    const subSpacing = 50;
-
-    // We'll store the x/y for each core in an object
-    // so we can place sub-beliefs on that angle from the center.
-    const corePositions = {};
-
-    // ------------------------------------------------------------------
-    // 3) POSITION & CREATE CORE BELIEF ELEMENTS
-    // ------------------------------------------------------------------
-    const chartDiv = document.getElementById("chart");
-
-    cores.forEach((core, i) => {
-      const angle = i * angleStep;
-      const x = centerX + radiusCores * Math.cos(angle);
-      const y = centerY + radiusCores * Math.sin(angle);
-
-      // Save position for sub-beliefs
-      corePositions[core.id] = { angle, x, y };
-
-      // Create a "coreBox" div at (x,y). We'll center it on that point:
-      const box = document.createElement("div");
-      box.className = "coreBox";
-      box.style.left = (x - 70) + "px";   // subtract half of width (140/2)
-      box.style.top  = (y - 30) + "px";  // subtract half of height (60/2)
-      box.textContent = core.label;
-
-      chartDiv.appendChild(box);
-    });
-
-    // ------------------------------------------------------------------
-    // 4) POSITION & CREATE SUB-BELIEF ELEMENTS
-    // ------------------------------------------------------------------
-    subBeliefs.forEach(sb => {
-      const { angle } = corePositions[sb.coreId];
-      // Calculate radius based on distanceIndex
-      const r = baseSubRadius + sb.distanceIndex * subSpacing;
-      const x = centerX + r * Math.cos(angle);
-      const y = centerY + r * Math.sin(angle);
-
-      // Create a line from core to sub?
-      // We'll do it with a plain HTML element or a "bordered" trick, but that can be awkward.
-      // Instead, we'll skip connecting lines in pure HTML/CSS—it's tricky to rotate a single div.
-      // If you absolutely need lines, you'd typically use <svg> or a canvas approach.
-      // But let's do a quick attempt with a rotating div:
-      // It's simpler to do lines in an <svg> behind everything, but let's do that approach:
-
-      // We'll do a subWrapper for the circle + label
-      const subWrap = document.createElement("div");
-      subWrap.className = "subWrapper";
-      subWrap.style.left = (x - 7) + "px";  // offset circle center
-      subWrap.style.top  = (y - 7) + "px";  // offset circle center
-
-      // Circle
-      const circle = document.createElement("div");
-      circle.className = "subCircle";
-
-      // Label
-      const label = document.createElement("div");
-      label.className = "subLabel";
-      label.textContent = sb.label;
-
-      subWrap.appendChild(circle);
-      subWrap.appendChild(label);
-
-      chartDiv.appendChild(subWrap);
-    });
-
-    // ------------------------------------------------------------------
-    // 5) OPTIONAL: DRAW LINES WITH A SIMPLE SVG LAYER
-    // ------------------------------------------------------------------
-    // Let's place an <svg> behind everything for connecting lines:
-    // We'll do it in code so we can connect each sub to the core position.
-
-    const svgNS = "http://www.w3.org/2000/svg";
-    const backSvg = document.createElementNS(svgNS, "svg");
-    backSvg.setAttribute("width", "1500");
-    backSvg.setAttribute("height", "1500");
-    backSvg.style.position = "absolute";
-    backSvg.style.left = "0";
-    backSvg.style.top = "0";
-    backSvg.style.zIndex = "0"; // behind the divs
-
-    // Insert at the very beginning of chartDiv
-    chartDiv.insertBefore(backSvg, chartDiv.firstChild);
-
-    subBeliefs.forEach(sb => {
-      const corePos = corePositions[sb.coreId];
-      const angle = corePos.angle;
-      const r = baseSubRadius + sb.distanceIndex * subSpacing;
-      const subX = centerX + r * Math.cos(angle);
-      const subY = centerY + r * Math.sin(angle);
-
-      const line = document.createElementNS(svgNS, "line");
-      line.setAttribute("x1", corePos.x);
-      line.setAttribute("y1", corePos.y);
-      line.setAttribute("x2", subX);
-      line.setAttribute("y2", subY);
-      line.setAttribute("stroke", "#999");
-      line.setAttribute("stroke-width", "1");
-      line.setAttribute("stroke-opacity", "0.6");
-
-      backSvg.appendChild(line);
+      // We'll do it via item::before. We'll need a bit of trick:
+      const style = document.createElement('style');
+      style.innerHTML = `
+        .sub-item[data-x="${circleX}"][data-y="${circleY}"][data-cx="${coreX}"][data-cy="${coreY}"]::before {
+          width: ${length}px;
+          height: 2px; /* line thickness */
+          top: 5px; 
+          left: 5px; /* to account for the circle's radius maybe */
+          transform: rotate(${angle}rad);
+          background: #ccc;
+        }
+      `;
+      document.head.appendChild(style);
     });
   </script>
 </body>
