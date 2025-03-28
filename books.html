@@ -1,64 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <title>My Reading List</title>
+  <!-- Example: Include your existing CSS (Bootstrap, etc.) -->
+  <link href="css/styles.css" rel="stylesheet" />
   <style>
+    /* Override to make the entire page dark */
     body {
       margin: 0;
       padding: 0;
       font-family: sans-serif;
-      background: #f9f9f9;
+      background: #1a1a1a; /* dark background */
+      color: #f0f0f0;      /* light text */
     }
+
+    /* Navigation bar styling (example) */
+    nav {
+      background: #111;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    nav .brand {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+    nav ul li a {
+      color: #ccc;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    nav ul li a:hover {
+      color: #fff;
+    }
+
+    /* Header styling */
     header {
       text-align: center;
       padding: 2rem;
-      background: #333;
-      color: white;
+      background: #2a2a2a;
+      margin-bottom: 0;
     }
-    h1 {
+    header h1 {
       margin: 0;
       font-size: 2rem;
+      color: #fff;
     }
-    p {
-      margin: 0.5rem 0 0 0;
+    header p {
+      color: #ccc;
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
     }
+
+    /* Container for the iframe or link */
     .container {
       max-width: 1200px;
-      margin: 2rem auto;
-      padding: 0 1rem;
+      margin: 1rem auto;
+      padding: 1rem;
     }
-    iframe {
+    .iframe-wrapper {
       width: 100%;
-      height: 80vh; /* Adjust the height as needed */
+      height: 80vh; /* adjust as needed */
       border: none;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
       border-radius: 4px;
+      background: #333; /* fallback background if Notion fails */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
     }
-    /* Add responsive styles if you like */
-    @media (max-width: 600px) {
-      header {
-        padding: 1rem;
-      }
-      h1 {
-        font-size: 1.5rem;
-      }
+    .iframe-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .error-message {
+      color: #ccc;
+      text-align: center;
+      font-size: 0.9rem;
+      max-width: 600px;
     }
   </style>
 </head>
 <body>
+
+  <!-- Example Nav (modify links to match your site) -->
+  <nav>
+    <a href="index.html" class="brand">Camden's Site</a>
+    <ul>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="readinglist.html">Reading List</a></li>
+    </ul>
+  </nav>
+
+  <!-- Page Header -->
   <header>
     <h1>My Ongoing Reading List</h1>
-    <p>Updated in Real-Time from My Notion Page</p>
+    <p>Updated in Real-Time from My Notion Page (if embedding is allowed)</p>
   </header>
 
   <div class="container">
-    <!-- Insert your public Notion page URL here -->
-    <iframe 
-      src="https://camdenkross.notion.site/Reading-List-01ee16890d894710a9e698ab5d3e5e26?pvs=4" 
-      allowfullscreen
-    >
-    </iframe>
+    <div class="iframe-wrapper">
+      <!-- Attempt to embed Notion page -->
+      <iframe 
+        src="https://camdenkross.notion.site/Reading-List-01ee16890d894710a9e698ab5d3e5e26?pvs=4"
+        allowfullscreen
+      >
+      </iframe>
+    </div>
+
+    <p class="error-message">
+      If you see "refused to connect," Notion may be blocking this iframe. 
+      You can <a href="https://camdenkross.notion.site/Reading-List-01ee16890d894710a9e698ab5d3e5e26?pvs=4" target="_blank" style="color:#fff;text-decoration:underline;">open the reading list directly</a>.
+    </p>
   </div>
+
+  <!-- (Optional) Footer or JS scripts -->
+  <footer style="text-align:center; padding:1rem; color:#666;">
+    &copy; 2025 Camden
+  </footer>
+
 </body>
 </html>
