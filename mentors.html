@@ -17,89 +17,215 @@
     </head>
     <body>
         <!-- Navigation-->
-        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
-            <div class="container px-4 px-lg-5">
-                <a class="navbar-brand" href="index.html">Start Bootstrap</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-                    Menu
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarResponsive">
-                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
-                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
-                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About</a></li>
-                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="post.html">Sample Post</a></li>
-                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="contact.html">Contact</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <!-- Page Header-->
-        <header class="masthead" style="background-image: url('assets/img/post-bg.jpg')">
-            <div class="container position-relative px-4 px-lg-5">
-                <div class="row gx-4 gx-lg-5 justify-content-center">
-                    <div class="col-md-10 col-lg-8 col-xl-7">
-                        <div class="post-heading">
-                            <h1>Inspiration</h1>
-                            <h2 class="subheading">Come here to get inspired</h2>
-                            <span class="meta">
-                                Posted by
-                                <a href="#!">Camden</a>
-                                on December 16, 2024
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
-        <!-- Post Content-->
-        <article class="mb-4">
-            <div class="container px-4 px-lg-5">
-                <div class="row gx-4 gx-lg-5 justify-content-center">
-                    <div class="col-md-10 col-lg-8 col-xl-7">
-                        <p>Mike Posner's Spotify profile: https://open.spotify.com/artist/2KsP6tYLJlTBvSUxnwlVWa
+        <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Mentors</title>
+  <style>
+    /* ----- BASIC PAGE RESET & FONTS ----- */
+    * {
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(145deg, #e0f7fa 0%, #fafafa 100%);
+      padding: 2rem;
+      color: #333;
+    }
 
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </article>
-        <!-- Footer-->
-        <footer class="border-top">
-            <div class="container px-4 px-lg-5">
-                <div class="row gx-4 gx-lg-5 justify-content-center">
-                    <div class="col-md-10 col-lg-8 col-xl-7">
-                        <ul class="list-inline text-center">
-                            <li class="list-inline-item">
-                                <a href="#!">
-                                    <span class="fa-stack fa-lg">
-                                        <i class="fas fa-circle fa-stack-2x"></i>
-                                        <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
-                                    </span>
-                                </a>
-                            </li>
-                            <li class="list-inline-item">
-                                <a href="#!">
-                                    <span class="fa-stack fa-lg">
-                                        <i class="fas fa-circle fa-stack-2x"></i>
-                                        <i class="fab fa-facebook-f fa-stack-1x fa-inverse"></i>
-                                    </span>
-                                </a>
-                            </li>
-                            <li class="list-inline-item">
-                                <a href="#!">
-                                    <span class="fa-stack fa-lg">
-                                        <i class="fas fa-circle fa-stack-2x"></i>
-                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
-                                    </span>
-                                </a>
-                            </li>
-                        </ul>
-                        <div class="small text-center text-muted fst-italic">Copyright &copy; Your Website 2023</div>
-                    </div>
-                </div>
-            </div>
-        </footer>
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+      letter-spacing: 1px;
+    }
+
+    /* ----- MENTOR SECTION WRAPPER ----- */
+    .mentor-section {
+      margin-bottom: 4rem; /* space between categories */
+    }
+
+    .mentor-section h2 {
+      text-transform: uppercase;
+      font-size: 1.5rem;
+      letter-spacing: 0.5px;
+      margin-bottom: 1rem;
+      color: #555;
+      border-left: 6px solid #ff5722; /* accent bar */
+      padding-left: 0.5rem;
+    }
+
+    /* ----- LIST STYLING ----- */
+    .mentor-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1rem;
+      list-style-type: none;
+    }
+
+    .mentor-list li {
+      background: white;
+      border-radius: 6px;
+      padding: 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .mentor-list li:hover {
+      transform: scale(1.03);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+    }
+
+    /* Extra flair for "main" mentor entries if you like */
+    .mentor-list li strong {
+      color: #ff5722; /* highlight in orange */
+      font-weight: 600;
+    }
+
+    /* Responsive tweak for smaller screens */
+    @media (max-width: 600px) {
+      body {
+        padding: 1rem;
+      }
+      .mentor-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Mentors & Influences</h1>
+
+  <!-- Spirituality -->
+  <section class="mentor-section">
+    <h2>Spirituality</h2>
+    <ul class="mentor-list">
+      <li><strong>Eckhart Tolle</strong></li>
+      <li>David Hawkins</li>
+      <li>Michael Singer</li>
+      <li>Jesus</li>
+      <li>Joe Dispenza</li>
+    </ul>
+  </section>
+
+  <!-- Man advice & wisdom -->
+  <section class="mentor-section">
+    <h2>Man Advice & Wisdom</h2>
+    <ul class="mentor-list">
+      <li><strong>Maximus (Gladiator)</strong></li>
+      <li>Marcus Aurelius (Stoicism)</li>
+      <li>Naval Ravikant</li>
+      <li>David Senra (Founders podcast)</li>
+      <li>Matthew McConaughey</li>
+      <li>Joshua Fields Millburn (The Minimalists)</li>
+      <li>Ed Thorpe</li>
+      <li>Jesse Itzler</li>
+    </ul>
+  </section>
+
+  <!-- Clarity & decisions -->
+  <section class="mentor-section">
+    <h2>Clarity & Decisions</h2>
+    <ul class="mentor-list">
+      <li><strong>Shane Parrish</strong> (Clear Thinking)</li>
+      <li>Richard Feynman</li>
+      <li>George Mack (Twitter)</li>
+      <li>Steve Pavlina (Blog)</li>
+    </ul>
+  </section>
+
+  <!-- Mindset & Performance -->
+  <section class="mentor-section">
+    <h2>Mindset & Performance</h2>
+    <ul class="mentor-list">
+      <li><strong>Neville Goddard</strong></li>
+      <li>Timothy Gallwey</li>
+      <li>James Clear</li>
+      <li>Dr. Demartini</li>
+      <li>Steve Siebold</li>
+    </ul>
+  </section>
+
+  <!-- Relationships & Communication -->
+  <section class="mentor-section">
+    <h2>Relationships & Communication</h2>
+    <ul class="mentor-list">
+      <li><strong>Rollo Tomassi</strong></li>
+      <li>John Gray (Men Are from Mars...) </li>
+      <li>Dr. Robert Glover (No More Mr. Nice Guy)</li>
+      <li>Caleb Simpson (Alpha Male 2.0)</li>
+      <li>Casey Zander</li>
+      <li>Alex Vilenchik (Playing with Fire)</li>
+      <li>Adele Faber (How to Talk So Kids Will Listen...)</li>
+      <li>Robert Green (Mastery/48 Laws)</li>
+    </ul>
+  </section>
+
+  <!-- Health & Fitness -->
+  <section class="mentor-section">
+    <h2>Health & Fitness</h2>
+    <ul class="mentor-list">
+      <li><strong>Andrew Huberman</strong></li>
+      <li>Brian Johnson</li>
+      <li>David Goggins</li>
+      <li>Peter Attia</li>
+      <li>Stephen Gundry</li>
+      <li>Darin Olien</li>
+      <li>Arnold Schwarzenegger</li>
+      <li>Jeff Nippard</li>
+      <li>Nick Bare</li>
+    </ul>
+  </section>
+
+  <!-- Creativity & Expression -->
+  <section class="mentor-section">
+    <h2>Creativity & Expression</h2>
+    <ul class="mentor-list">
+      <li><strong>Kevin Hart</strong></li>
+      <li>John Mayer</li>
+      <li>Jack Johnson</li>
+      <li>Matt D'Avella & Thomas Brag (Yes Theory)</li>
+      <li>Gaz Oakley (YouTube)</li>
+      <li>Christian LeBlanc</li>
+      <li>Cowboy - Clay Westfield</li>
+    </ul>
+  </section>
+
+  <!-- Business / Money -->
+  <section class="mentor-section">
+    <h2>Business / Money</h2>
+    <ul class="mentor-list">
+      <li><strong>Tony Robbins</strong></li>
+      <li>Napoleon Hill</li>
+      <li>Peter Thiel</li>
+      <li>James Dyson</li>
+      <li>Phil Knight</li>
+      <li>Ben Franklin</li>
+      <li>Alex Hormozi</li>
+      <li>Sam Parr / Shaan Puri (My First Million)</li>
+    </ul>
+  </section>
+
+  <!-- Writing / Stories / Sales -->
+  <section class="mentor-section">
+    <h2>Writing / Stories / Sales</h2>
+    <ul class="mentor-list">
+      <li><strong>Derek Sivers</strong></li>
+      <li>Gary Halbert</li>
+      <li>Matthew Dicks (Storyworthy)</li>
+      <li>William Zinsser (On Writing Well)</li>
+      <li>Chip Heath (Made to Stick)</li>
+      <li>Robert Cialdini</li>
+      <li>Robert Dilts (NLP)</li>
+      <li>David Ogilvy (Marketing)</li>
+      <li>Matt Ryder</li>
+    </ul>
+  </section>
+
+</body>
+</html>
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->
