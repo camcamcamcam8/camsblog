@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Camden's Belief Web (Segmented Radial Layout)</title>
-  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <title>Camden's Belief Web (Static Layout)</title>
   <style>
     body {
-      margin: 0; 
+      margin: 0;
       padding: 0;
       font-family: sans-serif;
-      background-color: #f9f9f9;
+      background: #f9f9f9;
     }
     h1, p {
       text-align: center;
@@ -17,269 +16,262 @@
       max-width: 800px;
     }
     #chart {
-      width: 100%;
-      height: 800px; /* adjust as needed */
+      /* Large fixed size so it doesn't cut off. Adjust as needed. */
+      width: 1500px; 
+      height: 1500px;
       margin: 0 auto;
       background: #fff;
       border: 1px solid #ccc;
+      position: relative; /* so we can absolutely position elements inside */
+      overflow: auto; /* show scrollbars if elements exceed this container */
     }
-    /* Core circles */
-    .coreBubble {
-      fill: steelblue;
-      stroke: #333;
-      stroke-width: 1px;
+
+    /* Core Belief Styles */
+    .coreBox {
+      position: absolute; /* We'll manually position each item */
+      width: 140px;
+      height: 60px;
+      border-radius: 12px;
+      background: steelblue;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-weight: bold;
+      padding: 10px;
     }
-    /* Sub-belief circles */
+
+    /* Sub-Belief Circle + Label wrapper */
+    .subWrapper {
+      position: absolute; 
+      display: flex;
+      align-items: center;
+    }
     .subCircle {
-      fill: orange;
-      stroke: #666;
-      stroke-width: 1px;
-      cursor: pointer; /* show clickable hand icon */
-    }
-    /* Lines linking sub to core */
-    line {
-      stroke: #999;
-      stroke-width: 1px;
-      stroke-opacity: 0.6;
-    }
-    /* Text styling */
-    text {
-      font-size: 0.8rem;
-      fill: #333;
-    }
-    .coreLabel {
-      fill: white; 
-      font-weight: bold; 
-      text-anchor: middle; 
-      dominant-baseline: middle; /* center text in circle */
-      pointer-events: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 7px;
+      background: orange;
+      margin-right: 6px; /* space between circle and label text */
     }
     .subLabel {
-      font-weight: bold; 
-      pointer-events: none; 
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #333;
+      max-width: 200px; /* wrap text if too long */
+      line-height: 1.2;
     }
   </style>
 </head>
 <body>
-  <h1>Camden's Belief Web</h1>
+  <h1>Camden's Static Belief Layout</h1>
   <p>
-    Each core belief is placed on an inner circle. Sub-beliefs are distributed in separate<br/>
-    wedges of the outer circle, preventing overlap. Scroll/pinch to zoom, drag background to pan.
+    Each core belief is a labeled rectangle around the center.<br/>
+    Sub-beliefs spread out along “spokes,” with closer or farther distances.
   </p>
 
-  <div id="chart"></div>
+  <div id="chart">
+    <!-- We’ll place our “coreBox” and “subWrapper” elements by calculating X/Y in JS. -->
+  </div>
 
   <script>
-    // ---------------------------------------------------------
-    // 1) DEFINE CORE BELIEFS & SUB BELIEFS (with info for popups)
-    // ---------------------------------------------------------
-    const coreBeliefs = [
-      { id: "Core1", name: "Universal Consciousness" },
-      { id: "Core2", name: "Oneness & Interconnectedness" },
-      { id: "Core3", name: "Societal Conditioning" },
-      { id: "Core4", name: "Suffering from Resistance" },
-      { id: "Core5", name: "Purpose & Greater Good" },
-      { id: "Core6", name: "Universal Laws & Energy" },
-      { id: "Core7", name: "Knowledge vs. Wisdom" },
+    // ------------------------------------------------------------------
+    // 1) DEFINE THE BELIEFS
+    // ------------------------------------------------------------------
+
+    // 7 CORE BELIEFS: each has an id + label
+    const cores = [
+      { id: "Core1", label: "Universal Consciousness" },
+      { id: "Core2", label: "Oneness & Interconnectedness" },
+      { id: "Core3", label: "Societal Conditioning" },
+      { id: "Core4", label: "Suffering from Resistance" },
+      { id: "Core5", label: "Purpose & Greater Good" },
+      { id: "Core6", label: "Universal Laws & Energy" },
+      { id: "Core7", label: "Knowledge vs. Wisdom" },
     ];
 
-    // Each sub-belief has a reference to which core it belongs (coreId)
-    // Also has 'info' for the alert popup
+    // For each sub-belief, define:
+    // - coreId (which core it belongs to)
+    // - label
+    // - distanceIndex (how close or far along the spoke it is: 1 = close, 2 = next, etc.)
+    //   The final radius from center is baseRadius + (distanceIndex * spacing).
     const subBeliefs = [
       // Core1
-      { coreId: "Core1", label: "We Are Spiritual Beings Having a Human Experience", info: "Expands on the notion that our essence is beyond the physical." },
-      { coreId: "Core1", label: "Death Is Not Truly an End", info: "Suggests consciousness continues beyond physical life." },
-      { coreId: "Core1", label: "There Is a Divine Order Amidst Chaos", info: "Despite appearances, a deeper harmony underlies events." },
-      { coreId: "Core1", label: "Prayer/Intention-Setting Opens the Heart", info: "Connecting with Source aligns your energy to higher states." },
-      { coreId: "Core1", label: "Stillness Reveals Inner Truth", info: "Silence unveils deeper awareness beyond mental chatter." },
+      { coreId: "Core1", label: "We Are Spiritual Beings Having a Human Experience", distanceIndex: 1 },
+      { coreId: "Core1", label: "Death Is Not Truly an End", distanceIndex: 2 },
+      { coreId: "Core1", label: "There Is a Divine Order Amidst Chaos", distanceIndex: 3 },
+      { coreId: "Core1", label: "Prayer/Intention-Setting Opens the Heart", distanceIndex: 4 },
+      { coreId: "Core1", label: "Stillness Reveals Inner Truth", distanceIndex: 5 },
 
       // Core2
-      { coreId: "Core2", label: "Authentic Service Reflects Oneness", info: "Helping others is helping oneself in a unified reality." },
-      { coreId: "Core2", label: "Self-Forgiveness Is Key", info: "Judging oneself harshly disrupts unity within." },
-      { coreId: "Core2", label: "Nothing External Can Truly Complete You", info: "True wholeness exists inside, not in outer forms." },
-      { coreId: "Core2", label: "Everyone Always Does What They Think Is Best", info: "We all act from perceived self-interest. Encourages empathy." },
-      { coreId: "Core2", label: "Everyone's Value as a Human Is EQUAL", info: "All share the same intrinsic worth, beyond status or money." },
-      { coreId: "Core2", label: "You Don't Have to Earn What's Already Yours", info: "Love and worth are inherent, not something to be won." },
+      { coreId: "Core2", label: "Authentic Service Reflects Oneness", distanceIndex: 1 },
+      { coreId: "Core2", label: "Self-Forgiveness Is Key", distanceIndex: 2 },
+      { coreId: "Core2", label: "Nothing External Can Truly Complete You", distanceIndex: 3 },
+      { coreId: "Core2", label: "Everyone Always Does What They Think Is Best", distanceIndex: 4 },
+      { coreId: "Core2", label: "Everyone's Value as a Human Is EQUAL", distanceIndex: 5 },
+      { coreId: "Core2", label: "You Don't Have to Earn What's Already Yours", distanceIndex: 6 },
 
       // Core3
-      { coreId: "Core3", label: "An Open Heart Is the Natural State", info: "Children start off open; society teaches fear or closure." },
-      { coreId: "Core3", label: "Emotions Are Energetic Invitations", info: "Feelings nudge us to release or learn, not suppress." },
-      { coreId: "Core3", label: "The Human Mind Is a Tool, Not the Master", info: "Over-identification with thoughts imprisons us." },
-      { coreId: "Core3", label: "Playfulness & Joy Are Sacred", info: "Lightheartedness counters the heaviness of social norms." },
-      { coreId: "Core3", label: "Less Is More", info: "Minimalism clarifies mind and priorities." },
-      { coreId: "Core3", label: "Good/Bad Are Perspectives, Not Absolutes", info: "Morality is relative, shaped by viewpoint." },
-      { coreId: "Core3", label: "Reality Is Not Binary; Our Minds Impose Categories", info: "We force spectrums into black/white extremes." },
+      { coreId: "Core3", label: "An Open Heart Is the Natural State", distanceIndex: 1 },
+      { coreId: "Core3", label: "Emotions Are Energetic Invitations", distanceIndex: 2 },
+      { coreId: "Core3", label: "The Human Mind Is a Tool, Not the Master", distanceIndex: 3 },
+      { coreId: "Core3", label: "Playfulness & Joy Are Sacred", distanceIndex: 4 },
+      { coreId: "Core3", label: "Less Is More", distanceIndex: 5 },
+      { coreId: "Core3", label: "Good/Bad Are Perspectives, Not Absolutes", distanceIndex: 6 },
+      { coreId: "Core3", label: "Reality Is Not Binary; Our Minds Impose Categories", distanceIndex: 7 },
 
       // Core4
-      { coreId: "Core4", label: "Acceptance Is Not Passivity", info: "Surrendering to what is allows empowered response." },
-      { coreId: "Core4", label: "Higher Frequencies Expand Possibility", info: "Love, gratitude, etc. open new potentials." },
-      { coreId: "Core4", label: "Gratitude Is a Gateway to Love & Peace", info: "Thankfulness dissolves conflict." },
-      { coreId: "Core4", label: "Feeling Is the Secret", info: "Embodying desired emotions shapes reality." },
-      { coreId: "Core4", label: "Adversity Is a Portal to Awakening", info: "Challenges can trigger profound growth." },
-      { coreId: "Core4", label: "You Don't Need to Push Through Fear—Stop Identifying with Its Source", info: "Fear is an ego construct. Dis-identify to dissolve it." },
+      { coreId: "Core4", label: "Acceptance Is Not Passivity", distanceIndex: 1 },
+      { coreId: "Core4", label: "Higher Frequencies Expand Possibility", distanceIndex: 2 },
+      { coreId: "Core4", label: "Gratitude Is a Gateway to Love & Peace", distanceIndex: 3 },
+      { coreId: "Core4", label: "Feeling Is the Secret", distanceIndex: 4 },
+      { coreId: "Core4", label: "Adversity Is a Portal to Awakening", distanceIndex: 5 },
+      { coreId: "Core4", label: "You Don't Need to Push Through Fear—Stop Identifying with Its Source", distanceIndex: 6 },
 
       // Core5
-      { coreId: "Core5", label: "The Kingdom of God/Enlightenment Is Within", info: "Look inward for fulfillment, not outward." },
-      { coreId: "Core5", label: "Nature Is a Gateway to the Divine", info: "Observing natural harmony reveals unity." },
-      { coreId: "Core5", label: "God/The Universe Works Through My Actions, Not in Place of Them", info: "We co-create actively, not passively waiting for miracles." },
+      { coreId: "Core5", label: "The Kingdom of God/Enlightenment Is Within", distanceIndex: 1 },
+      { coreId: "Core5", label: "Nature Is a Gateway to the Divine", distanceIndex: 2 },
+      { coreId: "Core5", label: "God/The Universe Works Through My Actions, Not in Place of Them", distanceIndex: 3 },
 
       // Core6
-      { coreId: "Core6", label: "We Co-Create Reality with Consciousness", info: "Beliefs, emotions, focus shape our experiences." },
-      { coreId: "Core6", label: "Focus on the 'What'; Universe Takes Care of the 'How'", info: "Set your intention, trust universal processes." },
-      { coreId: "Core6", label: "Becoming the Person Who Has X Is the True Way", info: "Embody the state of having, not wanting." },
-      { coreId: "Core6", label: "The Universe Is Constantly Offering Doors", info: "Synchronicities appear at each stage of alignment." },
-      { coreId: "Core6", label: "Manifestation Speed Reflects Certainty", info: "Doubt slows creation; conviction speeds it up." },
-      { coreId: "Core6", label: "Internal Contradiction Is the Biggest Delay", info: "When subconscious beliefs clash with desires, results stall." },
-      { coreId: "Core6", label: "Speak & Act from Already Having It", info: "Expressions of abundance reinforce that reality." },
-      { coreId: "Core6", label: "Every Intention Has an Energetic Charge", info: "Feeling & awareness amplify creation." },
-      { coreId: "Core6", label: "Faith, Not Force, Accelerates Desire", info: "Relaxed trust outperforms anxious effort." },
+      { coreId: "Core6", label: "We Co-Create Reality with Consciousness", distanceIndex: 1 },
+      { coreId: "Core6", label: "Focus on the 'What'; Universe Takes Care of the 'How'", distanceIndex: 2 },
+      { coreId: "Core6", label: "Becoming the Person Who Has X Is the True Way", distanceIndex: 3 },
+      { coreId: "Core6", label: "The Universe Is Constantly Offering Doors", distanceIndex: 4 },
+      { coreId: "Core6", label: "Manifestation Speed Reflects Certainty", distanceIndex: 5 },
+      { coreId: "Core6", label: "Internal Contradiction Is the Biggest Delay", distanceIndex: 6 },
+      { coreId: "Core6", label: "Speak & Act from Already Having It", distanceIndex: 7 },
+      { coreId: "Core6", label: "Every Intention Has an Energetic Charge", distanceIndex: 8 },
+      { coreId: "Core6", label: "Faith, Not Force, Accelerates Desire", distanceIndex: 9 },
 
       // Core7
-      { coreId: "Core7", label: "Presence Is the Ultimate Practice", info: "Deep wisdom arises by living fully in the Now." },
-      { coreId: "Core7", label: "Stillness Reveals Inner Truth", info: "Go beyond mental chatter to discover genuine insight." },
+      { coreId: "Core7", label: "Presence Is the Ultimate Practice", distanceIndex: 1 },
+      { coreId: "Core7", label: "Stillness Reveals Inner Truth", distanceIndex: 2 },
     ];
 
-    // ---------------------------------------------------------
-    // 2) PREP THE LAYOUT CONSTANTS
-    // ---------------------------------------------------------
-    const width = document.getElementById("chart").clientWidth;
-    const height = document.getElementById("chart").clientHeight;
-    const centerX = width / 2;
-    const centerY = height / 2;
+    // ------------------------------------------------------------------
+    // 2) LAYOUT CONSTANTS
+    // ------------------------------------------------------------------
 
-    const innerRadius = 140;  // radius for core beliefs
-    const outerRadius = 320;  // radius for sub-beliefs
-    const coreCircleRadius = 50; // how big each core bubble is
+    // Chart is 1500x1500, so let's define the center:
+    const centerX = 750;
+    const centerY = 750;
 
-    // We'll carve the outer ring into 7 wedges for the sub-beliefs
-    // so each core's sub-beliefs appear in its own slice of the circle
-    const wedgeAngle = (2 * Math.PI) / coreBeliefs.length;
+    // We'll place cores on a circle of radius = 200
+    const radiusCores = 200;
 
-    // Build a dictionary of sub-beliefs by parent core
-    const subsByCore = {};
-    coreBeliefs.forEach(core => {
-      subsByCore[core.id] = [];
+    // For sub-beliefs, each core has an angle. We'll do 7 angles, equally spaced.
+    // angleStep = 2π / 7
+    const angleStep = (2 * Math.PI) / cores.length;
+
+    // Distances for sub-beliefs:
+    // subBelief final radius = 300 + distanceIndex * 50 (for example).
+    // You can tweak base radius or spacing.
+    const baseSubRadius = 300;
+    const subSpacing = 50;
+
+    // We'll store the x/y for each core in an object
+    // so we can place sub-beliefs on that angle from the center.
+    const corePositions = {};
+
+    // ------------------------------------------------------------------
+    // 3) POSITION & CREATE CORE BELIEF ELEMENTS
+    // ------------------------------------------------------------------
+    const chartDiv = document.getElementById("chart");
+
+    cores.forEach((core, i) => {
+      const angle = i * angleStep;
+      const x = centerX + radiusCores * Math.cos(angle);
+      const y = centerY + radiusCores * Math.sin(angle);
+
+      // Save position for sub-beliefs
+      corePositions[core.id] = { angle, x, y };
+
+      // Create a "coreBox" div at (x,y). We'll center it on that point:
+      const box = document.createElement("div");
+      box.className = "coreBox";
+      box.style.left = (x - 70) + "px";   // subtract half of width (140/2)
+      box.style.top  = (y - 30) + "px";  // subtract half of height (60/2)
+      box.textContent = core.label;
+
+      chartDiv.appendChild(box);
     });
+
+    // ------------------------------------------------------------------
+    // 4) POSITION & CREATE SUB-BELIEF ELEMENTS
+    // ------------------------------------------------------------------
     subBeliefs.forEach(sb => {
-      subsByCore[sb.coreId].push(sb);
+      const { angle } = corePositions[sb.coreId];
+      // Calculate radius based on distanceIndex
+      const r = baseSubRadius + sb.distanceIndex * subSpacing;
+      const x = centerX + r * Math.cos(angle);
+      const y = centerY + r * Math.sin(angle);
+
+      // Create a line from core to sub?
+      // We'll do it with a plain HTML element or a "bordered" trick, but that can be awkward.
+      // Instead, we'll skip connecting lines in pure HTML/CSS—it's tricky to rotate a single div.
+      // If you absolutely need lines, you'd typically use <svg> or a canvas approach.
+      // But let's do a quick attempt with a rotating div:
+      // It's simpler to do lines in an <svg> behind everything, but let's do that approach:
+
+      // We'll do a subWrapper for the circle + label
+      const subWrap = document.createElement("div");
+      subWrap.className = "subWrapper";
+      subWrap.style.left = (x - 7) + "px";  // offset circle center
+      subWrap.style.top  = (y - 7) + "px";  // offset circle center
+
+      // Circle
+      const circle = document.createElement("div");
+      circle.className = "subCircle";
+
+      // Label
+      const label = document.createElement("div");
+      label.className = "subLabel";
+      label.textContent = sb.label;
+
+      subWrap.appendChild(circle);
+      subWrap.appendChild(label);
+
+      chartDiv.appendChild(subWrap);
     });
 
-    // ---------------------------------------------------------
-    // 3) CREATE THE SVG + ZOOM/PAN GROUP
-    // ---------------------------------------------------------
-    const svg = d3.select("#chart")
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height);
+    // ------------------------------------------------------------------
+    // 5) OPTIONAL: DRAW LINES WITH A SIMPLE SVG LAYER
+    // ------------------------------------------------------------------
+    // Let's place an <svg> behind everything for connecting lines:
+    // We'll do it in code so we can connect each sub to the core position.
 
-    const svgGroup = svg.append("g");
+    const svgNS = "http://www.w3.org/2000/svg";
+    const backSvg = document.createElementNS(svgNS, "svg");
+    backSvg.setAttribute("width", "1500");
+    backSvg.setAttribute("height", "1500");
+    backSvg.style.position = "absolute";
+    backSvg.style.left = "0";
+    backSvg.style.top = "0";
+    backSvg.style.zIndex = "0"; // behind the divs
 
-    const zoom = d3.zoom()
-      .scaleExtent([0.3, 3])
-      .on("zoom", (event) => {
-        svgGroup.attr("transform", event.transform);
-      });
+    // Insert at the very beginning of chartDiv
+    chartDiv.insertBefore(backSvg, chartDiv.firstChild);
 
-    svg.call(zoom).call(zoom.transform, d3.zoomIdentity.scale(0.8));
+    subBeliefs.forEach(sb => {
+      const corePos = corePositions[sb.coreId];
+      const angle = corePos.angle;
+      const r = baseSubRadius + sb.distanceIndex * subSpacing;
+      const subX = centerX + r * Math.cos(angle);
+      const subY = centerY + r * Math.sin(angle);
 
-    // ---------------------------------------------------------
-    // 4) POSITION THE 7 CORE BELIEFS IN A CIRCLE
-    // ---------------------------------------------------------
-    const coreAngleStep = (2 * Math.PI) / coreBeliefs.length;
-    coreBeliefs.forEach((core, i) => {
-      let angle = i * coreAngleStep;
-      core.x = centerX + innerRadius * Math.cos(angle);
-      core.y = centerY + innerRadius * Math.sin(angle);
+      const line = document.createElementNS(svgNS, "line");
+      line.setAttribute("x1", corePos.x);
+      line.setAttribute("y1", corePos.y);
+      line.setAttribute("x2", subX);
+      line.setAttribute("y2", subY);
+      line.setAttribute("stroke", "#999");
+      line.setAttribute("stroke-width", "1");
+      line.setAttribute("stroke-opacity", "0.6");
+
+      backSvg.appendChild(line);
     });
-
-    // Create a <g> for each core bubble
-    const coreGroups = svgGroup.selectAll(".coreGroup")
-      .data(coreBeliefs)
-      .enter()
-      .append("g")
-      .attr("class", "coreGroup")
-      .attr("transform", d => `translate(${d.x}, ${d.y})`);
-
-    // Large circle for the core bubble
-    coreGroups.append("circle")
-      .attr("class", "coreBubble")
-      .attr("r", coreCircleRadius);
-
-    // Label in the center
-    coreGroups.append("text")
-      .attr("class", "coreLabel")
-      .text(d => d.name);
-
-    // ---------------------------------------------------------
-    // 5) PLACE EACH CORE'S SUB-BELIEFS IN THAT CORE'S WEDGE
-    // ---------------------------------------------------------
-    coreBeliefs.forEach((core, i) => {
-      // Sub-beliefs for this core
-      let subs = subsByCore[core.id];
-      if (subs.length === 0) return;
-
-      // The wedge of angles for this core is
-      // [startAngle, endAngle] = [i*wedgeAngle, (i+1)*wedgeAngle]
-      let startAngle = i * wedgeAngle;
-      let endAngle   = (i + 1) * wedgeAngle;
-      let angleSpan  = endAngle - startAngle;
-
-      // We'll space sub-beliefs evenly within that wedge.
-      // If a core has N sub-beliefs, we define a subAngleStep = angleSpan / (N+1)
-      // and offset from startAngle by subAngleStep*(k+1).
-      let subAngleStep = angleSpan / (subs.length + 1);
-
-      subs.forEach((sb, k) => {
-        let angle = startAngle + subAngleStep * (k + 1);
-        sb.x = centerX + outerRadius * Math.cos(angle);
-        sb.y = centerY + outerRadius * Math.sin(angle);
-
-        // We'll draw a line from sub to its core
-        // in a moment, after we have all positions
-      });
-    });
-
-    // Flatten subBeliefs again for easy selection
-    // Then create <g> for each
-    const subGroups = svgGroup.selectAll(".subGroup")
-      .data(subBeliefs)
-      .enter()
-      .append("g")
-      .attr("class", "subGroup")
-      .attr("transform", d => `translate(${d.x}, ${d.y})`);
-
-    // Lines from sub to core
-    // We'll do it after sub coords are set
-    svgGroup.selectAll(".subLink")
-      .data(subBeliefs)
-      .enter()
-      .append("line")
-      .attr("class", "subLink")
-      .attr("x1", d => d.x)
-      .attr("y1", d => d.y)
-      .attr("x2", d => {
-        let parent = coreBeliefs.find(c => c.id === d.coreId);
-        return parent.x;
-      })
-      .attr("y2", d => {
-        let parent = coreBeliefs.find(c => c.id === d.coreId);
-        return parent.y;
-      });
-
-    // Sub-belief circle
-    subGroups.append("circle")
-      .attr("class", "subCircle")
-      .attr("r", 6)
-      .on("click", (event, d) => {
-        alert(`${d.label}\n\n${d.info}`);
-      });
-
-    // Sub-belief label (to the right of the circle)
-    subGroups.append("text")
-      .attr("class", "subLabel")
-      .attr("x", 10)
-      .attr("y", 3)
-      .text(d => d.label);
   </script>
 </body>
 </html>
