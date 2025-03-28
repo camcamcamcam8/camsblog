@@ -2,308 +2,302 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>My Beliefs (Static, Dark Layout)</title>
+  <title>My Beliefs</title>
   <style>
-    /* Basic reset */
+    /* ---- Basic reset & page style ---- */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    /* Dark background */
     body {
-      background: #121212;
-      color: #f0f0f0;
       font-family: sans-serif;
-      min-height: 100vh;
-      overflow-x: auto; /* let us scroll horizontally if needed */
-      padding: 2rem;
-      position: relative; /* so we can position things absolutely */
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 1rem;
+      background: #111; /* dark background */
+      color: #f0f0f0;
     }
 
-    /* Container for the entire arrangement */
-    .beliefs-container {
-      width: 2000px; /* big enough for everything; adjust as needed */
-      height: 1200px; /* likewise, can tweak */
-      margin: 0 auto;
-      position: relative;
-      background: #1e1e1e;
-      border: 2px solid #333;
-      border-radius: 8px;
-      overflow: hidden;
+    /* ---- NAVBAR (similar to reading list page) ---- */
+    nav {
+      background: #000;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-
-    /* Core Bubble styles */
-    .core-bubble {
-      position: absolute;
-      width: 200px;
-      padding: 10px;
-      background: #2980b9; /* nice blue */
-      border-radius: 12px;
-      text-align: center;
+    nav .brand {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.2rem;
       font-weight: bold;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+    nav ul li a {
+      color: #ccc;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    nav ul li a:hover {
       color: #fff;
     }
 
-    /* Sub-belief column wrapper */
-    .sub-column {
-      position: absolute;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
+    /* ---- Page Header ---- */
+    header {
+      text-align: center;
+      padding: 2rem;
+      background: #222; /* slightly lighter than navbar */
+      margin-bottom: 0;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      color: #fff;
+    }
+    header p {
+      color: #ccc;
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
     }
 
-    /* Each sub-belief item (text + circle) */
-    .sub-item {
-      margin: 6px 0;
+    /* ---- Main Container for beliefs ---- */
+    .beliefs-container {
+      position: relative;
+      width: 1600px; /* large container so we can position everything */
+      height: 900px; /* adjust as needed */
+      margin: 2rem auto;
+      background: #1a1a1a;
+      border-radius: 8px;
+      border: 2px solid #333;
+      overflow: hidden; /* hide if anything goes out of bounds */
+    }
+
+    /* ---- Core Bubble style ---- */
+    .core-bubble {
+      position: absolute;
+      width: 180px;
+      height: 60px;
+      background: #2980b9; /* steelblue vibe */
+      border-radius: 12px;
+      color: #fff;
       display: flex;
       align-items: center;
-      position: relative;
+      justify-content: center;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    /* ---- Sub Belief style ---- */
+    .sub-belief {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      font-size: 0.85rem;
+      max-width: 220px; /* wrap text if long */
     }
     .sub-circle {
       width: 10px;
       height: 10px;
-      background: orange;
       border-radius: 5px;
+      background: orange;
       margin-right: 6px;
       flex-shrink: 0;
     }
     .sub-text {
-      max-width: 240px; /* wrap text */
-      font-size: 0.9rem;
       line-height: 1.3;
       color: #f0f0f0;
     }
 
-    /* Lines: We'll create them with a pseudo-element on .sub-item */
-    .sub-item::before {
+    /* We’ll draw lines from sub-belief to the center of its core
+       using a pseudo-element. We'll store the line info in data- attributes. */
+    .sub-belief::before {
       content: "";
       position: absolute;
-      top: 5px; /* roughly center with the circle */
-      left: -1px; /* behind the circle */
       width: 2px;
       background: #ccc;
-      height: 0; /* we'll set it dynamically with "transform: scaleY(...)" */
-      transform-origin: top;
-      z-index: -1;
-    }
-
-    /* We'll store custom properties with --lineStartX, --lineStartY, etc. to draw lines from the sub to the core bubble */
-    .sub-item[data-x][data-y][data-cx][data-cy]::before {
-      /* read the custom props set in JS or inline style */
-      position: absolute;
-      width: 2px; /* thickness of line */
-      background: #ccc;
-      /* We'll do a transform to rotate + scale the line from core bubble to sub circle */
+      top: 5px;   /* center vertically relative to sub-circle */
+      left: 5px;  /* behind sub-circle */
       transform-origin: top left;
+      z-index: -1;
     }
   </style>
 </head>
 <body>
-  <h1>My Beliefs - Static Layout (Dark)</h1>
 
-  <div class="beliefs-container" id="beliefsContainer">
-    <!-- EXAMPLE: We'll place each CORE bubble absolutely. 
-         Then for sub-beliefs, we'll place them in a column and draw lines. 
-         For demonstration, let's do 7 core ideas. 
-         
-         Tweak the X/Y (left/top) positions for each core bubble, 
-         and place sub-belief columns likewise. 
-    -->
+<!-- NAVBAR (matches reading list style) -->
+<nav>
+  <a href="index.html" class="brand">Camden's Site</a>
+  <ul>
+    <li><a href="about.html">About</a></li>
+    <li><a href="readinglist.html">Reading List</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
 
-    <!-- 1) Core: Universal Consciousness (EXAMPLE) -->
-    <div class="core-bubble" style="left: 200px; top: 200px;">
-      Universal Consciousness  
-    </div>
-    <!-- Sub-belief column for this core -->
-    <div class="sub-column" style="left: 450px; top: 180px;">
-      <!-- Each sub-belief is a .sub-item with a .sub-circle and .sub-text
-           We'll manually connect lines from the sub circle to the core bubble center. 
-           Suppose the center of the core bubble is about (200+100, 200+40) => (300,240). 
-           We'll do this in JS or by hand if the layout is final. 
-       -->
-      <div class="sub-item" style="margin-top: 0;"
-           data-x="460" data-y="180"   /* approximate circle center */
-           data-cx="300" data-cy="240" /* core bubble center */
-      >
-        <div class="sub-circle"></div>
-        <div class="sub-text">We Are Spiritual Beings Having a Human Experience</div>
-      </div>
+<!-- Header / Title Section -->
+<header>
+  <h1>My Beliefs</h1>
+  <p>Static layout on a dark background, with each core idea centered</p>
+</header>
 
-      <div class="sub-item"
-           data-x="460" data-y="210"
-           data-cx="300" data-cy="240"
-      >
-        <div class="sub-circle"></div>
-        <div class="sub-text">Death Is Not Truly an End</div>
-      </div>
+<!-- Main container for the beliefs layout -->
+<div class="beliefs-container" id="beliefsContainer">
 
-      <div class="sub-item"
-           data-x="460" data-y="240"
-           data-cx="300" data-cy="240"
-      >
-        <div class="sub-circle"></div>
-        <div class="sub-text">There Is a Divine Order Amidst Chaos</div>
-      </div>
-      <!-- ... add more sub-items as needed -->
-    </div>
+  <!-- 
+    We'll place 7 core bubbles horizontally near the center row:
+    e.g., y= 100 or 200. 
+    Then sub-beliefs below each one, with lines going up or left to the bubble. 
+    Adjust X positions to space them evenly. 
+  -->
 
-    <!-- 2) Core: Oneness & Interconnectedness -->
-    <div class="core-bubble" style="left: 450px; top: 500px;">
-      Oneness &amp; Interconnectedness
-    </div>
-    <!-- Sub-belief column -->
-    <div class="sub-column" style="left: 700px; top: 480px;">
-      <div class="sub-item"
-           data-x="710" data-y="480"
-           data-cx="550" data-cy="540"
-      >
-        <div class="sub-circle"></div>
-        <div class="sub-text">Authentic Service Reflects Oneness</div>
-      </div>
-      <div class="sub-item"
-           data-x="710" data-y="510"
-           data-cx="550" data-cy="540"
-      >
-        <div class="sub-circle"></div>
-        <div class="sub-text">Self-Forgiveness Is Key</div>
-      </div>
-      <!-- etc... -->
-    </div>
-
-    <!-- 3) Core: Societal Conditioning -->
-    <div class="core-bubble" style="left: 300px; top: 800px;">
-      Societal Conditioning
-    </div>
-    <div class="sub-column" style="left: 550px; top: 780px;">
-      <div class="sub-item"
-           data-x="560" data-y="780"
-           data-cx="400" data-cy="830"
-      >
-        <div class="sub-circle"></div>
-        <div class="sub-text">An Open Heart Is the Natural State</div>
-      </div>
-      <div class="sub-item"
-           data-x="560" data-y="810"
-           data-cx="400" data-cy="830"
-      >
-        <div class="sub-circle"></div>
-        <div class="sub-text">Emotions Are Energetic Invitations</div>
-      </div>
-      <!-- etc. -->
-    </div>
-
-    <!-- 4) Core: Suffering from Resistance -->
-    <div class="core-bubble" style="left: 800px; top: 200px;">
-      Suffering from Resistance
-    </div>
-    <div class="sub-column" style="left: 1050px; top: 180px;">
-      <div class="sub-item"
-           data-x="1060" data-y="180"
-           data-cx="900" data-cy="240"
-      >
-        <div class="sub-circle"></div>
-        <div class="sub-text">Acceptance Is Not Passivity</div>
-      </div>
-      <!-- etc. -->
-    </div>
-
-    <!-- 5) Core: Purpose & Greater Good -->
-    <div class="core-bubble" style="left: 900px; top: 600px;">
-      Purpose &amp; Greater Good
-    </div>
-    <div class="sub-column" style="left: 1150px; top: 580px;">
-      <div class="sub-item"
-           data-x="1160" data-y="580"
-           data-cx="1000" data-cy="630"
-      >
-        <div class="sub-circle"></div>
-        <div class="sub-text">The Kingdom of God/Enlightenment Is Within</div>
-      </div>
-      <!-- etc. -->
-    </div>
-
-    <!-- 6) Core: Universal Laws & Energy -->
-    <div class="core-bubble" style="left: 1300px; top: 200px;">
-      Universal Laws &amp; Energy
-    </div>
-    <div class="sub-column" style="left: 1550px; top: 180px;">
-      <div class="sub-item"
-           data-x="1560" data-y="180"
-           data-cx="1400" data-cy="240"
-      >
-        <div class="sub-circle"></div>
-        <div class="sub-text">We Co-Create Reality with Consciousness</div>
-      </div>
-      <!-- etc. -->
-    </div>
-
-    <!-- 7) Core: Knowledge vs. Wisdom -->
-    <div class="core-bubble" style="left: 1300px; top: 600px;">
-      Knowledge vs. Wisdom
-    </div>
-    <div class="sub-column" style="left: 1550px; top: 580px;">
-      <div class="sub-item"
-           data-x="1560" data-y="580"
-           data-cx="1400" data-cy="630"
-      >
-        <div class="sub-circle"></div>
-        <div class="sub-text">Presence Is the Ultimate Practice</div>
-      </div>
-      <!-- etc. -->
-    </div>
-
-    <!-- More cores + sub-beliefs as desired -->
+  <!-- CORE 1 -->
+  <div class="core-bubble" style="left: 100px; top: 200px;" 
+       data-cx="190" data-cy="230">
+    Universal Consciousness
   </div>
+  <!-- Sub beliefs for Core1 -->
+  <!-- We'll place them below the core, in a vertical list. -->
+  <div class="sub-belief" style="left: 100px; top: 280px;"
+       data-cx="190" data-cy="230" data-x="110" data-y="285">
+    <div class="sub-circle"></div>
+    <div class="sub-text">We Are Spiritual Beings Having a Human Experience</div>
+  </div>
+  <div class="sub-belief" style="left: 100px; top: 320px;"
+       data-cx="190" data-cy="230" data-x="110" data-y="325">
+    <div class="sub-circle"></div>
+    <div class="sub-text">Death Is Not Truly an End</div>
+  </div>
+  <div class="sub-belief" style="left: 100px; top: 360px;"
+       data-cx="190" data-cy="230" data-x="110" data-y="365">
+    <div class="sub-circle"></div>
+    <div class="sub-text">There Is a Divine Order Amidst Chaos</div>
+  </div>
+  <!-- Add more if needed... -->
 
-  <script>
-    // We’ll draw lines by computing the angle + length from the sub circle to the core bubble.
-    // Then we transform scaleY or rotate. But for simplicity, let's do a direct approach:
-    // We'll do a "drawLine" function in JS for each sub-item.
+  <!-- CORE 2 -->
+  <div class="core-bubble" style="left: 400px; top: 200px;" 
+       data-cx="490" data-cy="230">
+    Suffering from Resistance
+  </div>
+  <!-- Sub beliefs for Core2 -->
+  <div class="sub-belief" style="left: 400px; top: 280px;"
+       data-cx="490" data-cy="230" data-x="410" data-y="285">
+    <div class="sub-circle"></div>
+    <div class="sub-text">Acceptance Is Not Passivity</div>
+  </div>
+  <!-- etc. -->
 
-    const subItems = document.querySelectorAll('.sub-item');
-    subItems.forEach(item => {
-      const circleX = parseFloat(item.dataset.x);
-      const circleY = parseFloat(item.dataset.y);
-      const coreX   = parseFloat(item.dataset.cx);
-      const coreY   = parseFloat(item.dataset.cy);
-      if (!circleX || !circleY || !coreX || !coreY) return;
+  <!-- CORE 3 -->
+  <div class="core-bubble" style="left: 700px; top: 200px;" 
+       data-cx="790" data-cy="230">
+    Universal Laws &amp; Energy
+  </div>
+  <!-- Sub beliefs for Core3 -->
+  <div class="sub-belief" style="left: 700px; top: 280px;"
+       data-cx="790" data-cy="230" data-x="710" data-y="285">
+    <div class="sub-circle"></div>
+    <div class="sub-text">We Co-Create Reality with Consciousness</div>
+  </div>
+  <!-- etc. -->
 
-      const dx = coreX - circleX;
-      const dy = coreY - circleY;
-      const length = Math.sqrt(dx*dx + dy*dy);
+  <!-- CORE 4 -->
+  <div class="core-bubble" style="left: 1000px; top: 200px;" 
+       data-cx="1090" data-cy="230">
+    Knowledge vs. Wisdom
+  </div>
+  <!-- Sub beliefs for Core4 -->
+  <div class="sub-belief" style="left: 1000px; top: 280px;"
+       data-cx="1090" data-cy="230" data-x="1010" data-y="285">
+    <div class="sub-circle"></div>
+    <div class="sub-text">Presence Is the Ultimate Practice</div>
+  </div>
+  <!-- etc. -->
 
-      // angle in radians
-      const angle = Math.atan2(dy, dx);
+  <!-- CORE 5 -->
+  <div class="core-bubble" style="left: 1300px; top: 200px;" 
+       data-cx="1390" data-cy="230">
+    Oneness &amp; Interconnectedness
+  </div>
+  <!-- Sub beliefs -->
+  <div class="sub-belief" style="left: 1300px; top: 280px;"
+       data-cx="1390" data-cy="230" data-x="1310" data-y="285">
+    <div class="sub-circle"></div>
+    <div class="sub-text">Authentic Service Reflects Oneness</div>
+  </div>
+  <div class="sub-belief" style="left: 1300px; top: 320px;"
+       data-cx="1390" data-cy="230" data-x="1310" data-y="325">
+    <div class="sub-circle"></div>
+    <div class="sub-text">Self-Forgiveness Is Key</div>
+  </div>
+  <!-- etc. -->
 
-      // item::before = that line. We can set transform to rotate(angle) and scale the height/width
-      // We'll store them in style:
-      // We'll put the origin at circleX,circleY. The top-left of .sub-item is (circleX, circleY),
-      // so we want the line to start at (0,0) in item coords, rotate, and extend length px.
+  <!-- CORE 6 -->
+  <div class="core-bubble" style="left: 400px; top: 500px;"
+       data-cx="490" data-cy="530">
+    Purpose &amp; Greater Good
+  </div>
+  <!-- Sub beliefs -->
+  <div class="sub-belief" style="left: 400px; top: 580px;"
+       data-cx="490" data-cy="530" data-x="410" data-y="585">
+    <div class="sub-circle"></div>
+    <div class="sub-text">The Kingdom of God/Enlightenment Is Within</div>
+  </div>
+  <!-- etc. -->
 
-      // We set the line's top to 0, left to 0. Then rotate + scaleX or scaleY as needed.
-      // Because the line is 2px wide, we can scaleX = length, rotate(angle).
-      item.style.setProperty('--lineAngle', angle + 'rad');
-      item.style.setProperty('--lineLength', length + 'px');
+  <!-- CORE 7 -->
+  <div class="core-bubble" style="left: 800px; top: 500px;" 
+       data-cx="890" data-cy="530">
+    Societal Conditioning
+  </div>
+  <!-- Sub beliefs -->
+  <div class="sub-belief" style="left: 800px; top: 580px;"
+       data-cx="890" data-cy="530" data-x="810" data-y="585">
+    <div class="sub-circle"></div>
+    <div class="sub-text">An Open Heart Is the Natural State</div>
+  </div>
+  <!-- etc. -->
 
-      // We'll do it via item::before. We'll need a bit of trick:
-      const style = document.createElement('style');
-      style.innerHTML = `
-        .sub-item[data-x="${circleX}"][data-y="${circleY}"][data-cx="${coreX}"][data-cy="${coreY}"]::before {
-          width: ${length}px;
-          height: 2px; /* line thickness */
-          top: 5px; 
-          left: 5px; /* to account for the circle's radius maybe */
-          transform: rotate(${angle}rad);
-          background: #ccc;
-        }
-      `;
-      document.head.appendChild(style);
-    });
-  </script>
+</div>
+
+<script>
+  // We'll connect each .sub-belief to its core bubble center with a line using a pseudo-element.
+  // We read data-cx, data-cy for the core center, and data-x, data-y for the sub circle center.
+
+  const subs = document.querySelectorAll('.sub-belief');
+  subs.forEach(sub => {
+    const circleX = parseFloat(sub.dataset.x);
+    const circleY = parseFloat(sub.dataset.y);
+    const coreX   = parseFloat(sub.dataset.cx);
+    const coreY   = parseFloat(sub.dataset.cy);
+
+    if (!circleX || !circleY || !coreX || !coreY) return;
+
+    // Compute the angle + distance
+    const dx = coreX - circleX;
+    const dy = coreY - circleY;
+    const length = Math.sqrt(dx*dx + dy*dy);
+    const angle  = Math.atan2(dy, dx);
+
+    // We'll insert a <style> block with a unique rule for each sub
+    const styleEl = document.createElement('style');
+    styleEl.innerHTML = `
+      .sub-belief[data-x="${circleX}"][data-y="${circleY}"][data-cx="${coreX}"][data-cy="${coreY}"]::before {
+        width: ${length}px;
+        height: 2px;
+        left: 5px;
+        top: 5px;
+        background: #ccc;
+        transform: rotate(${angle}rad);
+      }
+    `;
+    document.head.appendChild(styleEl);
+  });
+</script>
+
 </body>
 </html>
