@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Camden's Website</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+
+        <!-- Load D3.js from a CDN -->
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+
+        <!-- Additional styling for the D3 chart -->
+        <style>
+            /* Container for the force-directed graph */
+            #chart {
+                width: 100%;
+                height: 600px; /* Adjust the height as desired */
+                background: #f9f9f9;
+                margin-bottom: 50px; /* space from the footer */
+            }
+            text {
+                font-size: 0.8rem;
+                pointer-events: none; /* let mouse events pass through labels to circles */
+            }
+            .core {
+                fill: steelblue;
+                stroke: #333;
+                stroke-width: 1px;
+            }
+            .sub {
+                fill: orange;
+                stroke: #666;
+                stroke-width: 0.5px;
+            }
+            line {
+                stroke: #999;
+                stroke-opacity: 0.6;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="https://www.charitywater.org/camden-kross/camden-xmas-2024">click on me!</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
+                        aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About Me</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="post.html">My Favorite Post</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Page Header-->
+        <header class="masthead" style="background-color: #ffffff;">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="site-heading">
+                            <h1>Camden's Website</h1>
+                            <span class="subheading">A Peek Into My Life</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content-->
+        <div class="container px-4 px-lg-5">
+            <div class="row gx-4 gx-lg-5 justify-content-center">
+                <div class="col-md-10 col-lg-8 col-xl-7">
+                    <!-- Post preview-->
+                    <div class="post-preview">
+                        <a href="post.html">
+                            <h2 class="post-title">Man must explore, and this is exploration at its greatest</h2>
+                            <h3 class="post-subtitle">Problems look mighty small from 150 miles up</h3>
+                        </a>
+                        <p class="post-meta">
+                            Posted by
+                            <a href="#!">Start Bootstrap</a>
+                            on September 24, 2023
+                        </p>
+                    </div>
+                    <!-- Divider-->
+                    <hr class="my-4" />
+                    <!-- Post preview-->
+                    <div class="post-preview">
+                        <a href="testpost1.html"><h2 class="post-title">Test1.</h2></a>
+                        <p class="post-meta">
+                            Posted by
+                            <a href="#!">Camden</a>
+                            on Dec 16, 2024
+                        </p>
+                    </div>
+                    <!-- Divider-->
+                    <hr class="my-4" />
+                    <!-- Post preview-->
+                    <div class="post-preview">
+                        <a href="post.html">
+                            <h2 class="post-title">Science has not yet mastered prophecy</h2>
+                            <h3 class="post-subtitle">We predict too much for the next year and yet far too little for the next ten.</h3>
+                        </a>
+                        <p class="post-meta">
+                            Posted by
+                            <a href="#!">Start Bootstrap</a>
+                            on August 24, 2023
+                        </p>
+                    </div>
+                    <!-- Divider-->
+                    <hr class="my-4" />
+                    <!-- Post preview-->
+                    <div class="post-preview">
+                        <a href="post.html">
+                            <h2 class="post-title">Failure is not an option</h2>
+                            <h3 class="post-subtitle">Many say exploration is part of our destiny, but it’s actually our duty to future generations.</h3>
+                        </a>
+                        <p class="post-meta">
+                            Posted by
+                            <a href="#!">Start Bootstrap</a>
+                            on July 8, 2023
+                        </p>
+                    </div>
+                    <!-- Divider-->
+                    <hr class="my-4" />
+
+                    <!-- The new D3.js Belief Spiderweb Section -->
+                    <h2 class="post-title">My Belief Web</h2>
+                    <div id="chart"></div>
+                    <p>
+                        This is an interactive diagram. You can click and drag any circle
+                        to reposition it. The larger circles represent core beliefs, while
+                        the smaller circles are sub-beliefs linked to their core node.
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer-->
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <ul class="list-inline text-center">
+                            <li class="list-inline-item">
+                                <a href="#!">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="#!">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-facebook-f fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="#!">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Your Website 2023</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+
+        <!-- D3.js Force-Directed Graph Script -->
+        <script>
+        // -----------------------------
+        // 1) DEFINE NODES AND LINKS
+        // -----------------------------
+        const nodes = [
+          // Core Nodes (group "core")
+          { id: "Core1", name: "(1) Universal Consciousness", group: "core" },
+          { id: "Core2", name: "(2) Oneness & Interconnectedness", group: "core" },
+          { id: "Core3", name: "(3) Societal Conditioning", group: "core" },
+          { id: "Core4", name: "(4) Suffering from Resistance", group: "core" },
+          { id: "Core5", name: "(5) Purpose & Greater Good", group: "core" },
+          { id: "Core6", name: "(6) Universal Laws & Energy", group: "core" },
+          { id: "Core7", name: "(7) Knowledge vs. Wisdom", group: "core" },
+
+          // Sub-beliefs for Core1
+          { id: "1.1", name: "We Are Spiritual Beings", group: "sub" },
+          { id: "1.2", name: "Death Is Not the End", group: "sub" },
+          { id: "1.3", name: "Divine Order Amidst Chaos", group: "sub" },
+          { id: "1.4", name: "Prayer/Intention Opens Heart", group: "sub" },
+          { id: "1.5", name: "Stillness Reveals Inner Truth", group: "sub" },
+
+          // Sub-beliefs for Core2
+          { id: "2.1", name: "Authentic Service Reflects Oneness", group: "sub" },
+          { id: "2.2", name: "Self-Forgiveness Is Key", group: "sub" },
+          { id: "2.3", name: "Nothing External Completes You", group: "sub" },
+          { id: "2.4", name: "Everyone Acts in Self-Interest", group: "sub" },
+          { id: "2.5", name: "All Humans Have Equal Value", group: "sub" },
+          { id: "2.6", name: "You Don’t Earn What’s Already Yours", group: "sub" },
+
+          // Sub-beliefs for Core3
+          { id: "3.1", name: "Open Heart Is Natural State", group: "sub" },
+          { id: "3.2", name: "Emotions Are Invitations", group: "sub" },
+          { id: "3.3", name: "Mind Is Tool, Not Master", group: "sub" },
+          { id: "3.4", name: "Playfulness & Joy Are Sacred", group: "sub" },
+          { id: "3.5", name: "Less Is More", group: "sub" },
+          { id: "3.6", name: "Good/Bad Are Perspectives, Not Absolutes", group: "sub" },
+          { id: "3.7", name: "Reality Not Binary; Our Minds Impose Categories", group: "sub" },
+
+          // Sub-beliefs for Core4
+          { id: "4.1", name: "Acceptance ≠ Passivity", group: "sub" },
+          { id: "4.2", name: "Higher Frequencies Expand Possibility", group: "sub" },
+          { id: "4.3", name: "Gratitude: Gateway to Peace", group: "sub" },
+          { id: "4.4", name: "Feeling Is the Secret", group: "sub" },
+          { id: "4.5", name: "Adversity as Portal to Awakening", group: "sub" },
+          { id: "4.6", name: "Don’t Identify with Fear", group: "sub" },
+
+          // Sub-beliefs for Core5
+          { id: "5.1", name: "Kingdom of God Is Within", group: "sub" },
+          { id: "5.2", name: "Nature: Gateway to Divine", group: "sub" },
+          { id: "5.3", name: "Universe Works Through My Actions", group: "sub" },
+
+          // Sub-beliefs for Core6
+          { id: "6.1", name: "We Co-Create Reality", group: "sub" },
+          { id: "6.2", name: "Focus on What, Universe Handles How", group: "sub" },
+          { id: "6.3", name: "Become the Person Who Has X", group: "sub" },
+          { id: "6.4", name: "Universe Offers Doors", group: "sub" },
+          { id: "6.5", name: "Manifestation Speed = Certainty", group: "sub" },
+          { id: "6.6", name: "Internal Contradiction Delays", group: "sub" },
+          { id: "6.7", name: "Speak & Act from Already Having", group: "sub" },
+          { id: "6.8", name: "Intentions Have Energetic Charge", group: "sub" },
+          { id: "6.9", name: "Faith, Not Force, Accelerates Desire", group: "sub" },
+
+          // Sub-beliefs for Core7
+          { id: "7.1", name: "Presence Is Ultimate Practice", group: "sub" },
+          { id: "7.2", name: "Stillness Reveals Inner Truth", group: "sub" },
+        ];
+
+        // Links (sub-beliefs -> their Core node)
+        const links = [
+          // Core1
+          { source: "1.1", target: "Core1" },
+          { source: "1.2", target: "Core1" },
+          { source: "1.3", target: "Core1" },
+          { source: "1.4", target: "Core1" },
+          { source: "1.5", target: "Core1" },
+          // Core2
+          { source: "2.1", target: "Core2" },
+          { source: "2.2", target: "Core2" },
+          { source: "2.3", target: "Core2" },
+          { source: "2.4", target: "Core2" },
+          { source: "2.5", target: "Core2" },
+          { source: "2.6", target: "Core2" },
+          // Core3
+          { source: "3.1", target: "Core3" },
+          { source: "3.2", target: "Core3" },
+          { source: "3.3", target: "Core3" },
+          { source: "3.4", target: "Core3" },
+          { source: "3.5", target: "Core3" },
+          { source: "3.6", target: "Core3" },
+          { source: "3.7", target: "Core3" },
+          // Core4
+          { source: "4.1", target: "Core4" },
+          { source: "4.2", target: "Core4" },
+          { source: "4.3", target: "Core4" },
+          { source: "4.4", target: "Core4" },
+          { source: "4.5", target: "Core4" },
+          { source: "4.6", target: "Core4" },
+          // Core5
+          { source: "5.1", target: "Core5" },
+          { source: "5.2", target: "Core5" },
+          { source: "5.3", target: "Core5" },
+          // Core6
+          { source: "6.1", target: "Core6" },
+          { source: "6.2", target: "Core6" },
+          { source: "6.3", target: "Core6" },
+          { source: "6.4", target: "Core6" },
+          { source: "6.5", target: "Core6" },
+          { source: "6.6", target: "Core6" },
+          { source: "6.7", target: "Core6" },
+          { source: "6.8", target: "Core6" },
+          { source: "6.9", target: "Core6" },
+          // Core7
+          { source: "7.1", target: "Core7" },
+          { source: "7.2", target: "Core7" },
+        ];
+
+        // 2) SET UP SVG CANVAS
+        const width = document.getElementById("chart").clientWidth;
+        const height = document.getElementById("chart").clientHeight;
+
+        const svg = d3.select("#chart")
+          .append("svg")
+          .attr("width", width)
+          .attr("height", height);
+
+        // 3) INITIALIZE FORCE SIMULATION
+        const simulation = d3.forceSimulation(nodes)
+          .force("link", d3.forceLink(links).id(d => d.id).distance(120))
+          .force("charge", d3.forceManyBody().strength(-250))
+          .force("center", d3.forceCenter(width / 2, height / 2))
+          .force("collide", d3.forceCollide(40));
+
+        // 4) DRAW LINKS (LINES)
+        const link = svg.selectAll("line")
+          .data(links)
+          .enter()
+          .append("line")
+          .attr("stroke-width", 1);
+
+        // 5) DRAW NODES (CIRCLES)
+        const node = svg.selectAll("circle")
+          .data(nodes)
+          .enter()
+          .append("circle")
+          .attr("r", d => d.group === "core" ? 15 : 8)
+          .attr("class", d => d.group)
+          .call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended)
+          );
+
+        // 6) DRAW LABELS (TEXT)
+        const label = svg.selectAll("text")
+          .data(nodes)
+          .enter()
+          .append("text")
+          .text(d => d.name)
+          .attr("x", 8)
+          .attr("y", 3);
+
+        // 7) TICK FUNCTION
+        simulation.on("tick", () => {
+          link
+            .attr("x1", d => d.source.x)
+            .attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x)
+            .attr("y2", d => d.target.y);
+
+          node
+            .attr("cx", d => d.x)
+            .attr("cy", d => d.y);
+
+          label
+            .attr("x", d => d.x + 10)
+            .attr("y", d => d.y + 3);
+        });
+
+        // 8) DRAG BEHAVIOR
+        function dragstarted(event, d) {
+          if (!event.active) simulation.alphaTarget(0.3).restart();
+          d.fx = d.x;
+          d.fy = d.y;
+        }
+        function dragged(event, d) {
+          d.fx = event.x;
+          d.fy = event.y;
+        }
+        function dragended(event, d) {
+          if (!event.active) simulation.alphaTarget(0);
+          d.fx = null;
+          d.fy = null;
+        }
+        </script>
+    </body>
+</html>
